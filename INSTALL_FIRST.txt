@@ -1,0 +1,36 @@
+KM AFAQ - UPDATED PROJECT
+
+Implemented scope:
+1. Email/password login + 4-digit SMTP OTP login
+2. 4-digit OTP signup verification
+3. Forgot/reset password using 4-digit OTP
+4. Blog reactions: Like / Happy / Sad / Bad / Excited
+5. Comments, replies, edit/delete/report + notifications
+6. Digital product store and order requests
+7. Sponsored Email/LINE campaigns + click/impression tracking
+8. Jobs/Freelance board + employer submission + featured listings + click tracking
+9. Admin monetization/moderation pages and expanded revenue dashboard
+10. Flexible website URL normalization
+
+IMPORTANT - before testing new features:
+A) Back up your current project and database.
+B) Run this migration once in Supabase SQL Editor:
+   supabase/engagement_revenue_expansion_migration.sql
+C) Keep your current .env values. Add these server-only values if missing:
+   OTP_PEPPER=<long-random-secret>
+   SALES_NOTIFY_EMAIL=<your-email>
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_USERNAME=<your-gmail>
+   SMTP_PASSWORD=<gmail-app-password>
+   SMTP_FROM=<your-gmail>
+   SMTP_USE_TLS=true
+   SMTP_USE_SSL=false
+D) Do NOT expose SUPABASE_SERVICE_ROLE_KEY or OTP_PEPPER with a VITE_ prefix.
+E) Run:
+   npm install
+   npm run dev
+
+For LINE local testing, keep your existing Cloudflare tunnel and LINE_PUBLIC_BASE_URL setup.
+
+Payment checkout (Lemon Squeezy) is intentionally PENDING and not included yet.

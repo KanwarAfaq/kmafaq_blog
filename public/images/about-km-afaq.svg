@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-labelledby="title desc">
+  <title id="title">KM Afaq profile placeholder</title>
+  <desc id="desc">A clean blue and purple profile illustration placeholder for KM Afaq.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2563EB"/><stop offset="1" stop-color="#7C3AED"/></linearGradient>
+  </defs>
+  <rect width="640" height="640" rx="80" fill="#F3F4F6"/>
+  <circle cx="320" cy="255" r="130" fill="url(#bg)" opacity=".18"/>
+  <circle cx="320" cy="235" r="92" fill="url(#bg)"/>
+  <path d="M145 540c18-120 91-190 175-190s157 70 175 190" fill="url(#bg)"/>
+  <text x="320" y="600" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#1F2937">KM Afaq</text>
+</svg>

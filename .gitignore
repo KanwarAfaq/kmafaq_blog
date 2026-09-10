@@ -1,0 +1,16 @@
+node_modules
+dist
+.env
+.env.local
+.vercel
+.DS_Store
+npm-debug.log*
+
+# Python AI agent
+.env.agent
+agent/.env
+.venv/
+__pycache__/
+*.py[cod]
+
+.vercel
