@@ -11,8 +11,6 @@ import authRequestOtpHandler from './api/auth-request-otp.js';
 import authVerifyOtpHandler from './api/auth-verify-otp.js';
 import productOrderHandler from './api/product-order.js';
 import jobSubmitHandler from './api/job-submit.js';
-import goJobHandler from './api/go-job.js';
-import goSponsorHandler from './api/go-sponsor.js';
 
 function vercelResponseAdapter(res) {
   res.status = (code) => {
@@ -73,8 +71,6 @@ function localServerApi(env) {
     ['/api/auth-verify-otp', authVerifyOtpHandler],
     ['/api/product-order', productOrderHandler],
     ['/api/job-submit', jobSubmitHandler],
-    ['/api/go-job', goJobHandler],
-    ['/api/go-sponsor', goSponsorHandler],
   ];
 
   return {
