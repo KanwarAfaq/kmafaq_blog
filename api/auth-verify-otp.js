@@ -6,7 +6,7 @@ import {
   safeJsonBody,
   sha256,
   validEmail,
-} from './_server.js';
+} from '../server/_server.js';
 
 const PURPOSES = new Set(['login', 'signup', 'reset']);
 const MAX_ATTEMPTS = 5;

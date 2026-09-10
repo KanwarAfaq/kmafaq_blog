@@ -1,4 +1,4 @@
-import { cleanText, getServerSupabase, normalizeHttpUrl, safeJsonBody, validEmail } from './_server.js';
+import { cleanText, getServerSupabase, normalizeHttpUrl, safeJsonBody, validEmail } from '../server/_server.js';
 
 const PRODUCTS = new Set(['premium-alerts','featured-listing','sponsored-post','business-premium','digest-sponsor','featured-job','digital-product']);
 

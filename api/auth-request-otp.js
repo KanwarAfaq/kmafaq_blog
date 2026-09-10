@@ -7,7 +7,7 @@ import {
   sendSmtpMail,
   sha256,
   validEmail,
-} from './_server.js';
+} from '../server/_server.js';
 
 const PURPOSES = new Set(['login', 'signup', 'reset']);
 const OTP_TTL_MINUTES = 5;

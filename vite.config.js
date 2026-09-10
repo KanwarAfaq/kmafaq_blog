@@ -2,14 +2,11 @@ import crypto from 'node:crypto';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import lineConnectStartHandler from './api/line-connect-start.js';
-import lineCallbackHandler from './api/line-callback.js';
 import lineWebhookHandler from './api/line-webhook.js';
 import linePreferencesHandler from './api/line-preferences.js';
 import businessLeadHandler from './api/business-lead.js';
 import monetizationRequestHandler from './api/monetization-request.js';
-import goToolHandler from './api/go-tool.js';
-import goBusinessHandler from './api/go-business.js';
+import goHandler from './api/go.js';
 import authRequestOtpHandler from './api/auth-request-otp.js';
 import authVerifyOtpHandler from './api/auth-verify-otp.js';
 import productOrderHandler from './api/product-order.js';
@@ -67,14 +64,11 @@ async function prepareVercelLikeRequest(req) {
 
 function localServerApi(env) {
   const routes = [
-    ['/api/line-connect-start', lineConnectStartHandler],
-    ['/api/line-callback', lineCallbackHandler],
     ['/api/line-webhook', lineWebhookHandler],
     ['/api/line-preferences', linePreferencesHandler],
     ['/api/business-lead', businessLeadHandler],
     ['/api/monetization-request', monetizationRequestHandler],
-    ['/api/go-tool', goToolHandler],
-    ['/api/go-business', goBusinessHandler],
+    ['/api/go', goHandler],
     ['/api/auth-request-otp', authRequestOtpHandler],
     ['/api/auth-verify-otp', authVerifyOtpHandler],
     ['/api/product-order', productOrderHandler],

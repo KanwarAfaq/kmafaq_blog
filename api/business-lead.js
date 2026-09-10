@@ -1,4 +1,4 @@
-import { cleanText, getServerSupabase, safeJsonBody, validEmail } from './_server.js';
+import { cleanText, getServerSupabase, safeJsonBody, validEmail } from '../server/_server.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });

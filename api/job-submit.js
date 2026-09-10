@@ -6,7 +6,7 @@ import {
   sendSmtpMail,
   slugify,
   validEmail,
-} from './_server.js';
+} from '../server/_server.js';
 
 const WORK_MODES = new Set(['remote', 'hybrid', 'onsite']);
 const TYPES = new Set(['full-time', 'part-time', 'contract', 'internship', 'freelance']);

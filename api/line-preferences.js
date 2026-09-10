@@ -1,4 +1,4 @@
-import { getServerSupabase, safeJsonBody, sha256 } from './_server.js';
+import { getServerSupabase, safeJsonBody, sha256 } from '../server/_server.js';
 
 const TOPICS = new Set(['ai-tech','business','politics','world','sports','science','health','trending']);
 const LANGUAGES = new Set(['ur','en']);

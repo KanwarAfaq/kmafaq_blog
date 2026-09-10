@@ -43,7 +43,7 @@ def active_digest_sponsor(client: Client, channel: str, now: datetime | None = N
 def sponsor_click_url(settings: Settings, sponsor: dict[str, Any], channel: str) -> str:
     base_url = (settings.line_public_base_url or settings.site_url).rstrip("/")
     query = urlencode({"id": sponsor["id"], "channel": channel})
-    return f"{base_url}/api/go-sponsor?{query}"
+    return f"{base_url}/api/go?type=sponsor&{query}"
 
 
 def record_sponsor_impression(client: Client, sponsor: dict[str, Any] | None) -> None:

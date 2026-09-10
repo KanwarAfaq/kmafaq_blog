@@ -43,7 +43,7 @@ export default function JobDetailPage() {
           <aside className="h-fit rounded-3xl border border-gray-200 bg-white p-5 shadow-sm lg:sticky lg:top-24">
             <p className="text-xs font-black uppercase tracking-wide text-gray-400">Opportunity</p>
             <p className="mt-3 flex items-center gap-2 text-sm text-gray-600"><CalendarDays className="h-4 w-4" /> Posted {new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(new Date(job.created_at))}</p>
-            <a href={`/api/go-job?id=${encodeURIComponent(job.id)}`} target="_blank" rel="noreferrer" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 font-black text-white">Apply now <ExternalLink className="h-4 w-4" /></a>
+            <a href={`/api/go?type=job&id=${encodeURIComponent(job.id)}`} target="_blank" rel="noreferrer" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 font-black text-white">Apply now <ExternalLink className="h-4 w-4" /></a>
             <p className="mt-3 text-xs leading-5 text-gray-400">Applications are handled by the employer. KM Afaq does not guarantee hiring outcomes.</p>
           </aside>
         </div>

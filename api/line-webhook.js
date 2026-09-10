@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { getPublicBaseUrl, getServerSupabase, randomToken, sha256 } from './_server.js';
+import { getPublicBaseUrl, getServerSupabase, randomToken, sha256 } from '../server/_server.js';
 
 const REPLY_URL = 'https://api.line.me/v2/bot/message/reply';
 const PROFILE_URL = 'https://api.line.me/v2/bot/profile';
