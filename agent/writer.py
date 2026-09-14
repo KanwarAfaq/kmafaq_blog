@@ -4,7 +4,7 @@ import json
 import logging
 
 from .config import Settings
-from .llm import FallbackLLM
+from .llm import AllProvidersFailed, FallbackLLM
 from .models import Article, ResearchContext, TopicSelection, TrendItem
 from .utils import ensure_slug
 
@@ -94,7 +94,24 @@ Return exactly this JSON shape:
 candidate_index is 1-based and must point to one candidate above.
 relevance_score must be an integer from 0 to 100.
 """
-    data, provider = llm.generate_json(system=TOPIC_SYSTEM, prompt=prompt, max_output_tokens=1200)
+    try:
+        data, provider = llm.generate_json(system=TOPIC_SYSTEM, prompt=prompt, max_output_tokens=1200)
+    except AllProvidersFailed:
+        LOGGER.exception("All LLM providers failed during topic selection; using deterministic fallback candidate")
+        match = trends[0]
+        source_query = match.query.strip()
+        return TopicSelection(
+            topic=source_query,
+            angle=f"Current {language_name} explainer",
+            reason="Fallback selection because all JSON providers failed",
+            source_query=source_query,
+            source_url=match.source_url,
+            relevance_score=max(settings.min_trend_relevance, 60),
+            provider="rule-based-fallback",
+            trend=match,
+            source_provider=match.provider,
+            topic_category=infer_topic_category(source_query),
+        )
 
     try:
         candidate_index = int(data.get("candidate_index"))
