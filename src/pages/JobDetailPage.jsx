@@ -39,8 +39,11 @@ export default function JobDetailPage() {
       name: job.company_name,
       logo: job.logo_url || undefined,
     },
-    ...(job.work_mode === 'remote' ? { jobLocationType: 'TELECOMMUTE' } : {}),
-    ...(job.location ? {
+    ...(job.work_mode === 'remote' && job.location ? {
+      jobLocationType: 'TELECOMMUTE',
+      applicantLocationRequirements: { '@type': 'AdministrativeArea', name: job.location },
+    } : {}),
+    ...(job.work_mode !== 'remote' && job.location ? {
       jobLocation: {
         '@type': 'Place',
         address: { '@type': 'PostalAddress', addressLocality: job.location },
@@ -66,7 +69,7 @@ export default function JobDetailPage() {
         <div className="mt-7 grid gap-7 lg:grid-cols-[minmax(0,1fr)_300px]">
           <article className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
             <div className="flex items-start gap-4">
-              {job.logo_url ? <img src={job.logo_url} alt={`${job.company_name} logo`} className="h-14 w-14 rounded-2xl object-contain" /> : <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600"><BriefcaseBusiness /></span>}
+              {job.logo_url ? <img src={job.logo_url} alt={`${job.company_name} logo`} loading="eager" decoding="async" className="h-14 w-14 rounded-2xl object-contain" /> : <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600"><BriefcaseBusiness /></span>}
               <div>
                 <div className="flex flex-wrap gap-2">{job.featured ? <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700"><Sparkles className="h-3.5 w-3.5" /> Featured job</span> : null}</div>
                 <h1 className="mt-2 text-3xl font-black text-ink sm:text-4xl">{job.title}</h1>
