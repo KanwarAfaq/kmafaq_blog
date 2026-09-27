@@ -12,7 +12,7 @@ const PRODUCTS = [
   { id: 'business-premium', name: 'Business Premium', price: '$149/mo', desc: 'Featured listing + sponsored content + custom visibility package.', features: ['Directory promotion', 'Lead generation', 'Content placement'] },
   { id: 'digest-sponsor', name: 'Email / LINE Sponsor', price: 'From $75', desc: 'Place a tracked sponsored message inside KM Afaq reader digests.', features: ['Email + LINE placement', 'Click tracking', 'Campaign reporting'] },
   { id: 'featured-job', name: 'Featured Job', price: '$49 / 30 days', desc: 'Priority placement for jobs, internships and freelance opportunities.', features: ['Featured badge', 'Priority position', 'Application click tracking'] },
-  { id: 'digital-product', name: 'Digital Product Partnership', price: 'Custom', desc: 'Sell or bundle practical AI resources through the KM Afaq digital store.', features: ['Store placement', 'Order leads', 'Manual delivery now'] },
+  { id: 'digital-product', name: 'Digital Product Partnership', price: 'Custom', desc: 'Sell or bundle practical AI resources through the KM Afaq digital store.', features: ['Store placement', 'Order inquiries', 'Flexible fulfillment'] },
 ];
 
 const INITIAL_FORM = { name: '', email: '', company: '', website_url: '', budget: '', message: '', company_website: '' };
@@ -34,7 +34,7 @@ export default function PricingPage() {
     setSending(true);
     try {
       await submitMonetizationRequest({ ...form, product });
-      toast.success('Request received. KM Afaq can follow up and invoice manually.');
+      toast.success('Request received. KM Afaq will follow up with the next steps.');
       setForm(INITIAL_FORM);
     } catch (error) {
       toast.error(error.message);
@@ -48,9 +48,9 @@ export default function PricingPage() {
       <SEO title="Pricing & Advertise" path="/pricing" description="Premium alerts, sponsorships, featured jobs, business listings and digital products on KM Afaq." />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <p className="text-sm font-black text-primary">MONETIZE KM AFAQ</p>
-          <h1 className="mt-2 text-4xl font-black text-ink sm:text-5xl">Products you can sell now</h1>
-          <p className="mx-auto mt-3 max-w-2xl text-gray-600">Use manual invoicing first. Automated checkout remains pending for later.</p>
+          <p className="text-sm font-black text-primary">PRICING & PARTNERSHIPS</p>
+          <h1 className="mt-2 text-4xl font-black text-ink sm:text-5xl">Choose the right visibility or alert plan</h1>
+          <p className="mx-auto mt-3 max-w-2xl text-gray-600">Explore premium alerts, listings, sponsored content, jobs, and partnership options.</p>
         </div>
 
         <div className="mt-9 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
