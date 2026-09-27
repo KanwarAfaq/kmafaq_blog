@@ -37,36 +37,48 @@ function escapeXml(value = '') {
 async function fetchRows({ table, status, prefix }) {
   if (!SUPABASE_URL || !SUPABASE_KEY) return [];
 
-  const endpoint = new URL(`/rest/v1/${table}`, SUPABASE_URL);
-  endpoint.searchParams.set('select', 'slug,created_at');
-  endpoint.searchParams.set('status', `eq.${status}`);
-  endpoint.searchParams.set('order', 'created_at.desc');
-  endpoint.searchParams.set('limit', '1000');
+  const pageSize = 1000;
+  const rows = [];
 
-  try {
-    const response = await fetch(endpoint, {
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
-      },
-    });
-    if (!response.ok) throw new Error(`${table}: ${response.status}`);
-    const rows = await response.json();
-    return (rows || [])
-      .filter((row) => row?.slug)
-      .map((row) => ({
-        loc: `${SITE_URL}${prefix}${encodeURIComponent(row.slug)}`,
-        lastmod: row.created_at || null,
-      }));
-  } catch (error) {
-    console.warn('[sitemap]', error.message);
-    return [];
+  for (let offset = 0; offset < 50000; offset += pageSize) {
+    const endpoint = new URL(`/rest/v1/${table}`, SUPABASE_URL);
+    endpoint.searchParams.set('select', 'slug,created_at');
+    endpoint.searchParams.set('status', `eq.${status}`);
+    endpoint.searchParams.set('order', 'created_at.desc');
+    endpoint.searchParams.set('limit', String(pageSize));
+    endpoint.searchParams.set('offset', String(offset));
+
+    try {
+      const response = await fetch(endpoint, {
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+        },
+      });
+      if (!response.ok) throw new Error(`${table}: ${response.status}`);
+
+      const page = await response.json();
+      rows.push(...(page || []));
+      if (!Array.isArray(page) || page.length < pageSize) break;
+    } catch (error) {
+      console.warn('[sitemap]', error.message);
+      break;
+    }
   }
+
+  return rows
+    .filter((row) => row?.slug)
+    .map((row) => ({
+      loc: `${SITE_URL}${prefix}${encodeURIComponent(row.slug)}`,
+      lastmod: row.created_at || null,
+    }));
 }
 
 export default async function handler(req, res) {
   if (!['GET', 'HEAD'].includes(req.method || 'GET')) {
-    res.status(405).setHeader('Allow', 'GET, HEAD').end('Method not allowed');
+    res.statusCode = 405;
+    res.setHeader('Allow', 'GET, HEAD');
+    res.end('Method not allowed');
     return;
   }
 
@@ -86,12 +98,14 @@ ${unique.map(({ loc, lastmod }) => `  <url>
 </urlset>
 `;
 
+  res.statusCode = 200;
   res.setHeader('Content-Type', 'application/xml; charset=utf-8');
   res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
-  res.status(200);
+
   if (req.method === 'HEAD') {
     res.end();
     return;
   }
-  res.send(xml);
+
+  res.end(xml);
 }
