@@ -6,10 +6,10 @@ export const SITE = {
     'KM Afaq shares practical AI automation, technology, online earning insights, and digital services in Urdu and English.',
   email: 'hello@kmafaq.online',
   social: [
-    { label: 'Facebook', href: import.meta.env.VITE_SOCIAL_FACEBOOK || 'https://facebook.com/' },
-    { label: 'LinkedIn', href: import.meta.env.VITE_SOCIAL_LINKEDIN || 'https://linkedin.com/' },
-    { label: 'YouTube', href: import.meta.env.VITE_SOCIAL_YOUTUBE || 'https://youtube.com/' },
-    { label: 'Instagram', href: import.meta.env.VITE_SOCIAL_INSTAGRAM || 'https://instagram.com/' },
+    { label: 'Facebook', href: import.meta.env.VITE_SOCIAL_FACEBOOK || null },
+    { label: 'LinkedIn', href: import.meta.env.VITE_SOCIAL_LINKEDIN || null },
+    { label: 'YouTube', href: import.meta.env.VITE_SOCIAL_YOUTUBE || null },
+    { label: 'Instagram', href: import.meta.env.VITE_SOCIAL_INSTAGRAM || null },
   ],
 };
 
