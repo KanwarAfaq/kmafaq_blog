@@ -52,7 +52,7 @@ class PostRepository:
         start_utc, end_utc = self._local_day_bounds_utc()
         response = (
             self.client.table("posts")
-            .select("title,slug,language,topic_category,created_at")
+            .select("id,title,slug,language,topic_category,created_at")
             .eq("status", "published")
             .eq("is_ai_generated", True)
             .gte("created_at", start_utc)
@@ -60,7 +60,32 @@ class PostRepository:
             .order("created_at", desc=False)
             .execute()
         )
-        return list(getattr(response, "data", None) or [])
+        posts = list(getattr(response, "data", None) or [])
+        if not posts:
+            return posts
+
+        post_ids = [str(row["id"]) for row in posts if row.get("id")]
+        facebook_by_post: dict[str, dict[str, Any]] = {}
+        if post_ids:
+            try:
+                fb_response = (
+                    self.client.table("facebook_posts")
+                    .select("post_id,status,facebook_post_id,error_message,created_at")
+                    .in_("post_id", post_ids)
+                    .order("created_at", desc=True)
+                    .execute()
+                )
+                for row in (getattr(fb_response, "data", None) or []):
+                    key = str(row.get("post_id") or "")
+                    if key and key not in facebook_by_post:
+                        facebook_by_post[key] = row
+            except Exception:
+                # LINE summary should still work even if Facebook audit lookup fails.
+                facebook_by_post = {}
+
+        for row in posts:
+            row["facebook"] = facebook_by_post.get(str(row.get("id") or ""))
+        return posts
 
     def today_source_topics(self) -> set[str]:
         start_utc, end_utc = self._local_day_bounds_utc()

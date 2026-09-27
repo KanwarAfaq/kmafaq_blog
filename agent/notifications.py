@@ -28,14 +28,26 @@ def send_line(settings: Settings, message: str) -> str:
     return "sent"
 
 
+def _facebook_label(row: dict[str, Any]) -> str:
+    facebook = row.get("facebook") or {}
+    status = str(facebook.get("status") or "").strip().lower()
+    if status == "published":
+        return "FB ✅"
+    if status in {"disabled", "skipped-no-image"}:
+        return "FB ⏭"
+    if status:
+        return "FB ⚠️"
+    return "FB ?"
+
+
 def _title_lines(posts: list[dict[str, Any]], language: str) -> list[str]:
     rows = [row for row in posts if row.get("language") == language]
     lines: list[str] = []
     for index, row in enumerate(rows, 1):
         title = " ".join(str(row.get("title") or "Untitled").split())
-        if len(title) > 130:
-            title = title[:127].rstrip() + "…"
-        lines.append(f"{index}. {title}")
+        if len(title) > 112:
+            title = title[:109].rstrip() + "…"
+        lines.append(f"{index}. {title} — {_facebook_label(row)}")
     return lines
 
 
@@ -64,6 +76,7 @@ def build_daily_summary(
         f"🌐 English {english}/{target_each}",
         *(english_titles or ["No English titles found"]),
         "",
+        "Facebook: ✅ published · ⚠️ failed/misconfigured · ⏭ skipped",
         f"Read: {site_url}/blog",
     ]
     # LINE text messages allow far more than this in normal use, but keep a safe cap.
