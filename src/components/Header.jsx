@@ -68,7 +68,7 @@ export default function Header() {
         <div className="flex items-center gap-1 sm:gap-2">
           <NotificationMenu />
           {admin ? (
-            <button type="button" onClick={() => navigate('/admin/revenue')} className="hidden items-center gap-2 rounded-xl border border-emerald-200 px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 xl:inline-flex">
+            <button type="button" onClick={() => navigate('/admin')} className="hidden items-center gap-2 rounded-xl border border-emerald-200 px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 xl:inline-flex">
               <ShieldCheck className="h-4 w-4" /> Admin
             </button>
           ) : null}
@@ -103,7 +103,7 @@ export default function Header() {
             <nav className="mt-8 flex flex-col gap-2" aria-label="Mobile navigation">
               <NavItem label="Home" to="/" onClick={() => setMobileOpen(false)} />
               {navItems.map(([label, to]) => <NavItem key={to} label={label} to={to} onClick={() => setMobileOpen(false)} />)}
-              {admin ? <NavItem label="Admin" to="/admin/revenue" onClick={() => setMobileOpen(false)} /> : null}
+              {admin ? <NavItem label="Admin" to="/admin" onClick={() => setMobileOpen(false)} /> : null}
             </nav>
             <div className="mt-auto border-t border-gray-100 pt-5">
               {user ? (

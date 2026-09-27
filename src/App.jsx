@@ -26,6 +26,9 @@ const DigitalProductDetailPage = lazy(() => import('./pages/DigitalProductDetail
 const JobsPage = lazy(() => import('./pages/JobsPage'));
 const PostJobPage = lazy(() => import('./pages/PostJobPage'));
 const JobDetailPage = lazy(() => import('./pages/JobDetailPage'));
+const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
+const AdminContentPage = lazy(() => import('./pages/AdminContentPage'));
+const AdminSeoPage = lazy(() => import('./pages/AdminSeoPage'));
 const AdminRevenuePage = lazy(() => import('./pages/AdminRevenuePage'));
 const AdminMonetizationPage = lazy(() => import('./pages/AdminMonetizationPage'));
 
@@ -54,6 +57,9 @@ export default function App() {
           <Route path="jobs/post" element={<PostJobPage />} />
           <Route path="jobs/:slug" element={<JobDetailPage />} />
           <Route path="pricing" element={<PricingPage />} />
+          <Route path="admin" element={<RequireAuth><AdminDashboardPage /></RequireAuth>} />
+          <Route path="admin/content" element={<RequireAuth><AdminContentPage /></RequireAuth>} />
+          <Route path="admin/seo" element={<RequireAuth><AdminSeoPage /></RequireAuth>} />
           <Route path="admin/revenue" element={<RequireAuth><AdminRevenuePage /></RequireAuth>} />
           <Route path="admin/monetization" element={<RequireAuth><AdminMonetizationPage /></RequireAuth>} />
           <Route path="login" element={<LoginPage />} />
