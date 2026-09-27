@@ -1,0 +1,25 @@
+# KM Afaq
+
+> Practical AI automation, technology, online earning insights, jobs, tools, business resources, and digital services in Urdu and English.
+
+Canonical site: https://kmafaq.online
+Primary languages: English (en), Urdu (ur)
+
+## Main sections
+
+- [Home](https://kmafaq.online/)
+- [Blog](https://kmafaq.online/blog)
+- [Urdu Blog](https://kmafaq.online/blog/urdu)
+- [English Blog](https://kmafaq.online/blog/english)
+- [Services](https://kmafaq.online/services)
+- [Jobs](https://kmafaq.online/jobs)
+- [Business Directory](https://kmafaq.online/business)
+- [AI Tools](https://kmafaq.online/tools)
+- [Digital Store](https://kmafaq.online/shop)
+- [About](https://kmafaq.online/about)
+- [Contact](https://kmafaq.online/contact)
+
+## Crawling
+
+- XML sitemap: https://kmafaq.online/sitemap.xml
+- Robots policy: https://kmafaq.online/robots.txt
