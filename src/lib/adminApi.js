@@ -64,9 +64,9 @@ export async function deleteAdminPost(id) {
 }
 
 export async function getAdminHealth() {
-  return adminFetch('/api/admin-health');
+  return adminFetch('/api/site-ops?action=health');
 }
 
 export async function getAdminGsc() {
-  return adminFetch('/api/admin-gsc');
+  return adminFetch('/api/site-ops?action=gsc');
 }
