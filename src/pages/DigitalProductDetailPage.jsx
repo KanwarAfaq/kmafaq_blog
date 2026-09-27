@@ -43,11 +43,39 @@ export default function DigitalProductDetailPage() {
   }
 
   if (loading) return <Loader label="Loading product…" />;
-  if (!product) return <main className="mx-auto max-w-3xl px-4 py-20 text-center"><h1 className="text-3xl font-black text-ink">Product not found</h1><Link to="/shop" className="mt-5 inline-block font-black text-primary">Back to store</Link></main>;
+  if (!product) return <main className="mx-auto max-w-3xl px-4 py-20 text-center"><SEO title="Product not found" path={`/shop/${slug}`} noIndex /><h1 className="text-3xl font-black text-ink">Product not found</h1><p className="mt-3 text-gray-600">This resource may no longer be available.</p><Link to="/shop" className="mt-5 inline-block font-black text-primary">Back to store</Link></main>;
+
+  const canonicalUrl = `https://kmafaq.online/shop/${product.slug}`;
+  const productSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description: product.description || product.short_description,
+    image: product.cover_url || undefined,
+    category: product.category || undefined,
+    offers: {
+      '@type': 'Offer',
+      url: canonicalUrl,
+      price: Number(product.price || 0).toFixed(2),
+      priceCurrency: product.currency || 'USD',
+      availability: 'https://schema.org/InStock',
+      seller: { '@id': 'https://kmafaq.online/#organization' },
+    },
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://kmafaq.online/' },
+      { '@type': 'ListItem', position: 2, name: 'Digital Store', item: 'https://kmafaq.online/shop' },
+      { '@type': 'ListItem', position: 3, name: product.name, item: canonicalUrl },
+    ],
+  };
 
   return (
     <main className="py-12">
-      <SEO title={product.name} path={`/shop/${product.slug}`} description={product.short_description} image={product.cover_url} />
+      <SEO title={product.name} path={`/shop/${product.slug}`} description={product.short_description} image={product.cover_url} imageAlt={product.name} schema={[productSchema, breadcrumbSchema]} />
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <Link to="/shop" className="inline-flex items-center gap-2 text-sm font-black text-primary"><ArrowLeft className="h-4 w-4" /> Back to store</Link>
         <div className="mt-7 grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
