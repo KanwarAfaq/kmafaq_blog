@@ -33,7 +33,7 @@ export default function DigitalProductDetailPage() {
     setSending(true);
     try {
       await submitDigitalProductOrder({ ...form, product_id: product.id });
-      toast.success('Order request received. We will email you with payment/delivery details.');
+      toast.success('Order request received. We will email you with the next steps.');
       setForm((current) => ({ ...current, message: '', company_website: '' }));
     } catch (error) {
       toast.error(error.message);
@@ -69,7 +69,7 @@ export default function DigitalProductDetailPage() {
               <p className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-500" /> Digital delivery</p>
               <p className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-500" /> Email confirmation</p>
             </div>
-            <p className="mt-5 rounded-2xl bg-amber-50 p-3 text-xs leading-5 text-amber-800">Automated checkout is pending. For now, submit the order and KM Afaq can invoice/deliver manually.</p>
+            <p className="mt-5 rounded-2xl bg-blue-50 p-3 text-xs leading-5 text-blue-800">Submit your request below and you will receive payment or delivery instructions by email.</p>
             <form onSubmit={submit} className="mt-5 space-y-3">
               <input required placeholder="Your name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm" />
               <input required type="email" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm" />
