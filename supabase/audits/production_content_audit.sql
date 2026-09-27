@@ -41,22 +41,22 @@ order by created_at desc;
 select 'post' as content_type, id::text, title as name, slug
 from public.posts
 where status = 'published'
-  and (title ~* '(test|demo|sample|lorem|placeholder)' or coalesce(excerpt, '') ~* '(lorem ipsum|placeholder text)')
+  and (title ~* '(test post|testing post|demo post|sample post|dummy post|lorem ipsum|placeholder content|placeholder text)' or coalesce(excerpt, '') ~* '(lorem ipsum|placeholder content|placeholder text|this is a test post|dummy content)')
 union all
 select 'product', id::text, name, slug
 from public.digital_products
 where status = 'active'
-  and name ~* '(test|demo|sample|lorem|placeholder)'
+  and name ~* '(^|[^[:alnum:]_])(demo|sample|dummy|placeholder)([^[:alnum:]_]|$)'
 union all
 select 'job', id::text, title, slug
 from public.job_listings
 where status = 'active'
-  and title ~* '(test|demo|sample|lorem|placeholder)'
+  and title ~* '(test job|demo job|sample job|dummy job|lorem ipsum|placeholder)'
 union all
 select 'business', id::text, name, slug
 from public.business_listings
 where status = 'active'
-  and name ~* '(test|demo|sample|lorem|placeholder)'
+  and name ~* '(^|[^[:alnum:]_])(demo|sample|dummy|placeholder)([^[:alnum:]_]|$)'
 order by content_type, name;
 
 -- 4) URL/slug health. Unique constraints should keep these empty.
