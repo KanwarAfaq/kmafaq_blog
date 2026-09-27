@@ -25,7 +25,7 @@ const POST_CARD_FIELDS = [
 
 function requireSupabase() {
   if (!supabase) {
-    throw new Error('Supabase is not configured. Copy .env.example to .env and add your project credentials.');
+    throw new Error('The site data service is temporarily unavailable. Please try again later.');
   }
   return supabase;
 }
