@@ -8,7 +8,7 @@ import { supabase } from '../lib/supabase';
 
 function CommentAvatar({ comment }) {
   if (comment.author_avatar_url) {
-    return <img src={comment.author_avatar_url} alt="" className="h-9 w-9 rounded-full object-cover" />;
+    return <img src={comment.author_avatar_url} alt={comment.author_name ? `${comment.author_name} avatar` : 'Comment author avatar'} loading="lazy" decoding="async" className="h-9 w-9 rounded-full object-cover" />;
   }
   return <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-primary"><UserRound className="h-4 w-4" /></span>;
 }

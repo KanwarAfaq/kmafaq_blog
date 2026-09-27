@@ -53,7 +53,7 @@ export default function HomePage() {
             { to: '/line', title: 'LINE Alerts', text: 'Scan, add as friend, choose topics. No website login.', icon: MessageCircle },
             { to: '/alerts', title: 'Premium Intelligence', text: 'Track companies, people and keywords.', icon: BellRing },
             { to: '/business', title: 'Business Directory', text: 'Featured listings with direct lead capture.', icon: BriefcaseBusiness },
-            { to: '/tools', title: 'AI Tools', text: 'Curated tools with affiliate-ready links.', icon: Sparkles },
+            { to: '/tools', title: 'AI Tools', text: 'Curated AI and software tools for practical work.', icon: Sparkles },
           ].map(({ to, title, text, icon: Icon }) => (
             <Link key={to} to={to} className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg">
               <Icon className="h-5 w-5 text-primary" />
@@ -89,7 +89,7 @@ export default function HomePage() {
                 {urduPosts.map((post) => <BlogCard key={post.id} post={post} />)}
               </div>
             ) : (
-              <EmptyState title="ابھی کوئی اردو پوسٹ نہیں" description="ایجنٹ کی اگلی اردو پوسٹ یہاں نظر آئے گی۔" />
+              <EmptyState title="ابھی کوئی اردو پوسٹ نہیں" description="نئے اردو مضامین شائع ہونے کے بعد یہاں نظر آئیں گے۔" />
             )}
           </div>
 
@@ -105,7 +105,7 @@ export default function HomePage() {
                 {englishPosts.map((post) => <BlogCard key={post.id} post={post} />)}
               </div>
             ) : (
-              <EmptyState title="No English posts yet" description="The next English agent post will appear here automatically." />
+              <EmptyState title="No English posts yet" description="New English articles will appear here as they are published." />
             )}
           </div>
         </div>

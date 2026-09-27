@@ -45,7 +45,7 @@ export default function Footer() {
             {SITE.email}
           </a>
           <div className="mt-5 flex flex-wrap gap-2" aria-label="Social links">
-            {SITE.social.map((social) => {
+            {SITE.social.filter((social) => Boolean(social.href)).map((social) => {
               const Icon = socialIcons[social.label];
               return (
                 <a

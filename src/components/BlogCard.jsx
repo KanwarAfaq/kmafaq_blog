@@ -16,7 +16,7 @@ export default function BlogCard({ post, compact = false }) {
       <article lang={language} dir={isUrdu ? 'rtl' : 'ltr'} className="group flex gap-3">
         <Link to={`/blog/${post.slug}`} className="h-20 w-24 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
           {post.cover_image_url ? (
-            <img src={post.cover_image_url} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+            <img src={post.cover_image_url} alt={post.title} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
           ) : (
             <div className="h-full w-full bg-gradient-to-br from-blue-100 to-purple-100" />
           )}

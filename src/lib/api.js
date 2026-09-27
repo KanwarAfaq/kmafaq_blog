@@ -25,7 +25,7 @@ const POST_CARD_FIELDS = [
 
 function requireSupabase() {
   if (!supabase) {
-    throw new Error('Supabase is not configured. Copy .env.example to .env and add your project credentials.');
+    throw new Error('The site data service is temporarily unavailable. Please try again later.');
   }
   return supabase;
 }
@@ -128,6 +128,39 @@ export async function getRelatedPosts(post, limit = 7) {
     if (selected.length >= limit) break;
   }
   return selected;
+}
+
+export async function getAdjacentPosts(post) {
+  if (!post?.created_at) return { previous: null, next: null };
+  const client = requireSupabase();
+  const language = post.language || 'ur';
+
+  const [olderResult, newerResult] = await Promise.all([
+    client
+      .from('posts')
+      .select(POST_CARD_FIELDS)
+      .eq('status', 'published')
+      .eq('language', language)
+      .lt('created_at', post.created_at)
+      .order('created_at', { ascending: false })
+      .limit(1),
+    client
+      .from('posts')
+      .select(POST_CARD_FIELDS)
+      .eq('status', 'published')
+      .eq('language', language)
+      .gt('created_at', post.created_at)
+      .order('created_at', { ascending: true })
+      .limit(1),
+  ]);
+
+  if (olderResult.error) throw olderResult.error;
+  if (newerResult.error) throw newerResult.error;
+
+  return {
+    previous: olderResult.data?.[0] ?? null,
+    next: newerResult.data?.[0] ?? null,
+  };
 }
 
 export async function getServices() {

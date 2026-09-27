@@ -87,9 +87,13 @@ function LanguageListing({ language }) {
     return `${meta.path}${query ? `?${query}` : ''}`;
   };
 
+  const canonicalPath = topic === 'all' ? makeHref(page) : meta.path;
+  const listingTitle = page > 1 && topic === 'all' ? `${meta.label} — Page ${page}` : meta.label;
+  const listingNoIndex = topic !== 'all' || (!loading && page > totalPages);
+
   return (
     <>
-      <SEO title={meta.label} path={meta.path} description={meta.description} language={meta.lang} />
+      <SEO title={listingTitle} path={canonicalPath} description={meta.description} language={meta.lang} noIndex={listingNoIndex} />
 
       <section className="relative overflow-hidden border-b border-blue-100 bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 sm:py-16">
         <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-blue-200/40 blur-3xl" />
@@ -133,7 +137,7 @@ function LanguageListing({ language }) {
             ) : (
               <EmptyState
                 title={isUrdu ? 'اس موضوع پر ابھی کوئی مضمون نہیں' : 'No articles in this topic yet'}
-                description={isUrdu ? 'کوئی دوسرا موضوع منتخب کریں یا بعد میں دوبارہ دیکھیں۔' : 'Choose another topic or check back after the next publishing run.'}
+                description={isUrdu ? 'کوئی دوسرا موضوع منتخب کریں یا بعد میں دوبارہ دیکھیں۔' : 'Choose another topic or check back later for new articles.'}
               />
             )}
           </div>

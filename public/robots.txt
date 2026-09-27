@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /login
-Disallow: /admin/
+Disallow: /api/
 Sitemap: https://kmafaq.online/sitemap.xml

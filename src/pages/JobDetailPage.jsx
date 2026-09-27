@@ -14,17 +14,62 @@ export default function JobDetailPage() {
   useEffect(() => { getJobBySlug(slug).then(setJob).catch(() => setJob(null)).finally(() => setLoading(false)); }, [slug]);
 
   if (loading) return <Loader label="Loading job…" />;
-  if (!job) return <main className="mx-auto max-w-3xl px-4 py-20 text-center"><h1 className="text-3xl font-black text-ink">Job not found</h1><Link to="/jobs" className="mt-5 inline-block font-black text-primary">Back to jobs</Link></main>;
+  if (!job) return <main className="mx-auto max-w-3xl px-4 py-20 text-center"><SEO title="Job not found" path={`/jobs/${slug}`} noIndex /><h1 className="text-3xl font-black text-ink">Job not found</h1><p className="mt-3 text-gray-600">This opportunity may have closed or been removed.</p><Link to="/jobs" className="mt-5 inline-block font-black text-primary">Back to jobs</Link></main>;
+
+  const employmentTypes = {
+    'full-time': 'FULL_TIME',
+    'part-time': 'PART_TIME',
+    contract: 'CONTRACTOR',
+    internship: 'INTERN',
+    freelance: 'CONTRACTOR',
+  };
+  const canonicalUrl = `https://kmafaq.online/jobs/${job.slug}`;
+  const jobSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    title: job.title,
+    description: job.description,
+    datePosted: job.created_at,
+    dateModified: job.updated_at || job.created_at,
+    validThrough: job.expires_at || undefined,
+    employmentType: employmentTypes[job.employment_type] || undefined,
+    url: canonicalUrl,
+    hiringOrganization: {
+      '@type': 'Organization',
+      name: job.company_name,
+      logo: job.logo_url || undefined,
+    },
+    ...(job.work_mode === 'remote' && job.location ? {
+      jobLocationType: 'TELECOMMUTE',
+      applicantLocationRequirements: { '@type': 'AdministrativeArea', name: job.location },
+    } : {}),
+    ...(job.work_mode !== 'remote' && job.location ? {
+      jobLocation: {
+        '@type': 'Place',
+        address: { '@type': 'PostalAddress', addressLocality: job.location },
+      },
+    } : {}),
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://kmafaq.online/' },
+      { '@type': 'ListItem', position: 2, name: 'Jobs', item: 'https://kmafaq.online/jobs' },
+      { '@type': 'ListItem', position: 3, name: job.title, item: canonicalUrl },
+    ],
+  };
 
   return (
     <main className="py-12">
-      <SEO title={`${job.title} at ${job.company_name}`} path={`/jobs/${job.slug}`} description={`${job.title} opportunity at ${job.company_name}.`} />
+      <SEO title={`${job.title} at ${job.company_name}`} path={`/jobs/${job.slug}`} description={`${job.title} opportunity at ${job.company_name}.`} image={job.logo_url} imageAlt={`${job.company_name} logo`} schema={[jobSchema, breadcrumbSchema]} />
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <Link to="/jobs" className="inline-flex items-center gap-2 text-sm font-black text-primary"><ArrowLeft className="h-4 w-4" /> Back to jobs</Link>
         <div className="mt-7 grid gap-7 lg:grid-cols-[minmax(0,1fr)_300px]">
           <article className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
             <div className="flex items-start gap-4">
-              {job.logo_url ? <img src={job.logo_url} alt="" className="h-14 w-14 rounded-2xl object-contain" /> : <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600"><BriefcaseBusiness /></span>}
+              {job.logo_url ? <img src={job.logo_url} alt={`${job.company_name} logo`} loading="eager" decoding="async" className="h-14 w-14 rounded-2xl object-contain" /> : <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600"><BriefcaseBusiness /></span>}
               <div>
                 <div className="flex flex-wrap gap-2">{job.featured ? <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700"><Sparkles className="h-3.5 w-3.5" /> Featured job</span> : null}</div>
                 <h1 className="mt-2 text-3xl font-black text-ink sm:text-4xl">{job.title}</h1>
