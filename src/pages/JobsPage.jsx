@@ -46,7 +46,7 @@ export default function JobsPage() {
             <article key={job.id} className={`rounded-3xl border bg-white p-5 shadow-sm sm:p-6 ${job.featured ? 'border-amber-200' : 'border-gray-200'}`}>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex gap-4">
-                  {job.logo_url ? <img src={job.logo_url} alt="" className="h-12 w-12 rounded-xl object-contain" /> : <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600"><BriefcaseBusiness /></span>}
+                  {job.logo_url ? <img src={job.logo_url} alt={`${job.company_name} logo`} loading="lazy" decoding="async" className="h-12 w-12 rounded-xl object-contain" /> : <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600"><BriefcaseBusiness /></span>}
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="text-xl font-black text-ink"><Link to={`/jobs/${job.slug}`} className="hover:text-primary">{job.title}</Link></h2>
