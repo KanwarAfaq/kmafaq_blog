@@ -50,8 +50,8 @@ export default function DigitalProductsPage() {
           {!products.length ? (
             <div className="col-span-full rounded-3xl border border-dashed border-gray-300 p-12 text-center text-gray-500">
               <FileDown className="mx-auto h-8 w-8 text-gray-300" />
-              <p className="mt-3 font-black text-ink">Digital store is ready.</p>
-              <p className="mt-1 text-sm">Add your first product from the admin monetization page.</p>
+              <p className="mt-3 font-black text-ink">No digital products are available yet.</p>
+              <p className="mt-1 text-sm">New resources will appear here when they are released.</p>
             </div>
           ) : null}
         </div>
