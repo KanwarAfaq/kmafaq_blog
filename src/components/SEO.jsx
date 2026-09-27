@@ -62,7 +62,7 @@ export default function SEO({
 
   const webPageSchema = {
     '@context': 'https://schema.org',
-    '@type': type === 'article' ? 'WebPage' : 'WebPage',
+    '@type': 'WebPage',
     '@id': `${canonical}#webpage`,
     url: canonical,
     name: pageTitle,
