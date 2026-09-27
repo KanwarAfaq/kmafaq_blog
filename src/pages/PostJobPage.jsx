@@ -31,13 +31,13 @@ export default function PostJobPage() {
 
   return (
     <main className="py-14">
-      <SEO title="Post a Job" path="/jobs/post" description="Submit a job, internship or freelance opportunity to KM Afaq." />
+      <SEO title="Post a Job" path="/jobs/post" description="Submit a job, internship or freelance opportunity to KM Afaq." noIndex />
       <div className="mx-auto max-w-4xl px-4 sm:px-6">
         <Link to="/jobs" className="text-sm font-black text-primary">← Back to jobs</Link>
         <div className="mt-5 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600"><BriefcaseBusiness /></div>
           <h1 className="mt-4 text-3xl font-black text-ink">Post a job or freelance opportunity</h1>
-          <p className="mt-2 text-gray-600">Standard submissions are reviewed before publication. Featured listings receive priority placement and can be invoiced manually until checkout is connected.</p>
+          <p className="mt-2 text-gray-600">Standard submissions are reviewed before publication. Featured listings receive priority placement and a Featured badge.</p>
 
           <form onSubmit={submit} className="mt-7 grid gap-4 sm:grid-cols-2">
             <input required placeholder="Job title *" value={form.title} onChange={set('title')} className="rounded-xl border border-gray-300 px-4 py-3" />
