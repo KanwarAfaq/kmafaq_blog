@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarDays, Clock3, Share2, Tag } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CalendarDays, Clock3, ListTree, Share2, Tag } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -8,7 +8,7 @@ import LikeButton from '../components/LikeButton';
 import CommentsSection from '../components/CommentsSection';
 import Loader from '../components/Loader';
 import SEO from '../components/SEO';
-import { getPostBySlug, getRelatedPosts } from '../lib/api';
+import { getAdjacentPosts, getPostBySlug, getRelatedPosts } from '../lib/api';
 import { normalizeArticleMarkdown } from '../lib/markdown';
 import { topicLabel } from '../lib/topics';
 
@@ -17,18 +17,62 @@ function estimateReadMinutes(content = '') {
   return Math.max(1, Math.ceil(words / 220));
 }
 
-function RelatedSidebar({ posts, language }) {
+function headingId(value = '') {
+  return String(value)
+    .replace(/[*_`~[\]()]/g, '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80);
+}
+
+function extractHeadings(markdown = '') {
+  return Array.from(String(markdown).matchAll(/^(#{2,3})\s+(.+)$/gm))
+    .map((match) => {
+      const text = match[2].replace(/\[(.*?)\]\([^)]*\)/g, '$1').replace(/[*_`~]/g, '').trim();
+      return { level: match[1].length, text, id: headingId(text) };
+    })
+    .filter((item) => item.text && item.id);
+}
+
+function headingText(children) {
+  if (Array.isArray(children)) return children.map((item) => (typeof item === 'string' ? item : '')).join('');
+  return typeof children === 'string' ? children : '';
+}
+
+function ArticleSidebar({ posts, language, headings }) {
   const isUrdu = language === 'ur';
-  if (!posts.length) return null;
+  if (!posts.length && !headings.length) return null;
   return (
-    <aside className="lg:sticky lg:top-24">
-      <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-primary">{isUrdu ? 'مزید پڑھیں' : 'Keep reading'}</p>
-        <h2 className="mt-2 text-xl font-black text-ink">{isUrdu ? 'متعلقہ مضامین' : 'Related articles'}</h2>
-        <div className="mt-5 space-y-5 divide-y divide-gray-100 [&>article:not(:first-child)]:pt-5">
-          {posts.slice(0, 4).map((post) => <BlogCard key={post.id} post={post} compact />)}
+    <aside className="space-y-5 lg:sticky lg:top-24">
+      {headings.length ? (
+        <nav className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm" aria-label={isUrdu ? 'مضمون کی فہرست' : 'Table of contents'}>
+          <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-primary">
+            <ListTree className="h-4 w-4" aria-hidden="true" />
+            {isUrdu ? 'اس مضمون میں' : 'In this article'}
+          </p>
+          <ol className="mt-4 space-y-2.5 text-sm">
+            {headings.map((item, index) => (
+              <li key={`${item.id}-${index}`} className={item.level === 3 ? 'ps-4' : ''}>
+                <a href={`#${item.id}`} className="block leading-6 text-gray-600 transition hover:text-primary">
+                  {item.text}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      ) : null}
+
+      {posts.length ? (
+        <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-primary">{isUrdu ? 'مزید پڑھیں' : 'Keep reading'}</p>
+          <h2 className="mt-2 text-xl font-black text-ink">{isUrdu ? 'متعلقہ مضامین' : 'Related articles'}</h2>
+          <div className="mt-5 space-y-5 divide-y divide-gray-100 [&>article:not(:first-child)]:pt-5">
+            {posts.slice(0, 4).map((post) => <BlogCard key={post.id} post={post} compact />)}
+          </div>
         </div>
-      </div>
+      ) : null}
     </aside>
   );
 }
@@ -37,6 +81,7 @@ export default function BlogPostPage() {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
   const [related, setRelated] = useState([]);
+  const [adjacent, setAdjacent] = useState({ previous: null, next: null });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [progress, setProgress] = useState(0);
@@ -51,12 +96,17 @@ export default function BlogPostPage() {
         if (!active) return;
         setPost(data);
         if (data) {
-          try {
-            const rows = await getRelatedPosts(data, 7);
-            if (active) setRelated(rows);
-          } catch {
-            if (active) setRelated([]);
+          const [relatedRows, adjacentRows] = await Promise.all([
+            getRelatedPosts(data, 7).catch(() => []),
+            getAdjacentPosts(data).catch(() => ({ previous: null, next: null })),
+          ]);
+          if (active) {
+            setRelated(relatedRows);
+            setAdjacent(adjacentRows);
           }
+        } else if (active) {
+          setRelated([]);
+          setAdjacent({ previous: null, next: null });
         }
       })
       .catch((loadError) => {
@@ -84,6 +134,7 @@ export default function BlogPostPage() {
   }, []);
 
   const markdown = useMemo(() => normalizeArticleMarkdown(post?.content || ''), [post?.content]);
+  const headings = useMemo(() => extractHeadings(markdown), [markdown]);
 
   if (loading) return <Loader label="Loading article..." />;
 
@@ -114,10 +165,22 @@ export default function BlogPostPage() {
     description: post.seo_description || post.excerpt || post.title,
     image: post.cover_image_url || undefined,
     datePublished: post.created_at,
-    dateModified: post.created_at,
-    author: { '@type': 'Person', name: 'KM Afaq' },
-    publisher: { '@type': 'Organization', name: 'KM Afaq', url: 'https://kmafaq.online' },
+    dateModified: post.updated_at || post.created_at,
+    author: { '@id': 'https://kmafaq.online/#person' },
+    publisher: { '@id': 'https://kmafaq.online/#organization' },
     mainEntityOfPage: `https://kmafaq.online/blog/${post.slug}`,
+    isAccessibleForFree: true,
+    keywords: topicLabel(post.topic_category, 'en'),
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://kmafaq.online/' },
+      { '@type': 'ListItem', position: 2, name: isUrdu ? 'اردو بلاگ' : 'English Blog', item: `https://kmafaq.online${blogPath}` },
+      { '@type': 'ListItem', position: 3, name: post.title, item: `https://kmafaq.online/blog/${post.slug}` },
+    ],
   };
 
   const share = async () => {
@@ -136,9 +199,10 @@ export default function BlogPostPage() {
         description={post.seo_description || post.excerpt || post.title}
         path={`/blog/${post.slug}`}
         image={post.cover_image_url}
+        imageAlt={post.title}
         type="article"
         language={language}
-        schema={[blogPostingSchema]}
+        schema={[blogPostingSchema, breadcrumbSchema]}
       />
 
       <div className="fixed inset-x-0 top-0 z-[60] h-1 bg-transparent" aria-hidden="true">
@@ -193,8 +257,13 @@ export default function BlogPostPage() {
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={{
-                    h1: ({ node: _node, ...props }) => <h2 {...props} />,
-                    a: ({ node: _node, ...props }) => <a target="_blank" rel="noreferrer" {...props} />,
+                    h1: ({ node: _node, children, ...props }) => <h2 id={headingId(headingText(children))} {...props}>{children}</h2>,
+                    h2: ({ node: _node, children, ...props }) => <h2 id={headingId(headingText(children))} {...props}>{children}</h2>,
+                    h3: ({ node: _node, children, ...props }) => <h3 id={headingId(headingText(children))} {...props}>{children}</h3>,
+                    a: ({ node: _node, href, ...props }) => {
+                      const external = /^https?:\/\//i.test(href || '');
+                      return <a href={href} {...(external ? { target: '_blank', rel: 'noreferrer' } : {})} {...props} />;
+                    },
                     table: ({ node: _node, ...props }) => <div className="article-table-wrap"><table {...props} /></div>,
                   }}
                 >
@@ -203,8 +272,31 @@ export default function BlogPostPage() {
               </div>
             </div>
 
-            <RelatedSidebar posts={related} language={language} />
+            <ArticleSidebar posts={related} language={language} headings={headings} />
           </div>
+
+          {(adjacent.previous || adjacent.next) ? (
+            <nav className="mx-auto mt-10 grid max-w-4xl gap-4 sm:grid-cols-2" aria-label={isUrdu ? 'پچھلا اور اگلا مضمون' : 'Previous and next articles'}>
+              {adjacent.previous ? (
+                <Link to={`/blog/${adjacent.previous.slug}`} className="group rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-blue-200 hover:shadow-md">
+                  <span className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-gray-400">
+                    <ArrowLeft className={`h-4 w-4 ${isUrdu ? 'rotate-180' : ''}`} aria-hidden="true" />
+                    {isUrdu ? 'پچھلا مضمون' : 'Previous article'}
+                  </span>
+                  <span className="mt-2 block font-black leading-6 text-ink transition group-hover:text-primary">{adjacent.previous.title}</span>
+                </Link>
+              ) : <span />}
+              {adjacent.next ? (
+                <Link to={`/blog/${adjacent.next.slug}`} className="group rounded-2xl border border-gray-200 bg-white p-5 text-start shadow-sm transition hover:border-blue-200 hover:shadow-md sm:text-end">
+                  <span className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-gray-400">
+                    {isUrdu ? 'اگلا مضمون' : 'Next article'}
+                    <ArrowRight className={`h-4 w-4 ${isUrdu ? 'rotate-180' : ''}`} aria-hidden="true" />
+                  </span>
+                  <span className="mt-2 block font-black leading-6 text-ink transition group-hover:text-primary">{adjacent.next.title}</span>
+                </Link>
+              ) : null}
+            </nav>
+          ) : null}
 
           <div className="mx-auto mt-10 max-w-4xl space-y-6" dir="ltr">
             <LikeButton postId={post.id} />
