@@ -19,7 +19,7 @@ function estimateReadMinutes(content = '') {
 
 function headingId(value = '') {
   return String(value)
-    .replace(/[*_`~[\]()]/g, '')
+    .replace(/[*_`~()[\]]/g, '')
     .trim()
     .toLowerCase()
     .replace(/[^\p{L}\p{N}]+/gu, '-')
@@ -37,8 +37,10 @@ function extractHeadings(markdown = '') {
 }
 
 function headingText(children) {
-  if (Array.isArray(children)) return children.map((item) => (typeof item === 'string' ? item : '')).join('');
-  return typeof children === 'string' ? children : '';
+  if (Array.isArray(children)) return children.map(headingText).join('');
+  if (typeof children === 'string' || typeof children === 'number') return String(children);
+  if (children?.props?.children) return headingText(children.props.children);
+  return '';
 }
 
 function ArticleSidebar({ posts, language, headings }) {
