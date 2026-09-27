@@ -8,6 +8,7 @@ from pathlib import Path
 from .cloudinary_client import upload_cover
 from .config import Settings
 from .database import PostRepository
+from .facebook import publish_photo
 from .image_generator import AllImageProvidersFailed, generate_cover_image
 from .llm import FallbackLLM
 from .models import PublishResult
@@ -175,7 +176,24 @@ def run_agent(
         )
         LOGGER.info("Supabase publish complete: %s", result.url)
 
-        # No per-post notification. Only the 10/10 completion summary is sent once.
+        facebook = publish_photo(
+            settings,
+            title=article.title,
+            excerpt=article.excerpt,
+            article_url=result.url,
+            image_url=media.secure_url if media else None,
+        )
+        repo.record_facebook_post(
+            post_id=result.post_id,
+            language=language,
+            status=facebook.status,
+            facebook_post_id=facebook.facebook_post_id,
+            image_url=media.secure_url if media else None,
+            article_url=result.url,
+            error_message=facebook.error,
+        )
+
+        # No per-post LINE notification. Only the 10/10 completion summary is sent once.
         daily_summary = maybe_send_daily_summary(settings, repo)
 
         summary = {
@@ -193,6 +211,9 @@ def run_agent(
             "image_source_url": cover.source_url if cover else None,
             "cloudinary_public_id": media.public_id if media else None,
             "cloudinary_asset_id": media.asset_id if media else None,
+            "facebook_status": facebook.status,
+            "facebook_post_id": facebook.facebook_post_id,
+            "facebook_error": facebook.error,
             "daily_line_summary": daily_summary,
         }
         print(json.dumps(summary, ensure_ascii=False, indent=2))

@@ -179,6 +179,37 @@ class PostRepository:
             raw=inserted,
         )
 
+    def record_facebook_post(
+        self,
+        *,
+        post_id: str,
+        language: str,
+        status: str,
+        facebook_post_id: str | None = None,
+        image_url: str | None = None,
+        article_url: str | None = None,
+        error_message: str | None = None,
+    ) -> None:
+        """Best-effort audit log. Missing table must never break website publishing."""
+        try:
+            self.client.table("facebook_posts").insert(
+                {
+                    "post_id": post_id,
+                    "language": language,
+                    "status": status,
+                    "facebook_post_id": facebook_post_id,
+                    "image_url": image_url,
+                    "article_url": article_url,
+                    "error_message": error_message,
+                }
+            ).execute()
+        except Exception:
+            import logging
+
+            logging.getLogger(__name__).exception(
+                "Could not record facebook_posts audit row for post_id=%s", post_id
+            )
+
     def daily_summary_sent(self, publish_date: str) -> bool:
         """Return True only when today's LINE summary has already been sent.
 

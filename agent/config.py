@@ -85,6 +85,12 @@ class Settings:
     cloudinary_api_secret: str = os.getenv("CLOUDINARY_API_SECRET", "")
     cloudinary_folder: str = os.getenv("CLOUDINARY_AGENT_FOLDER", "km-afaq/blog")
 
+    # Facebook Page publishing. Failures are non-blocking for website publishing.
+    facebook_page_id: str = os.getenv("FACEBOOK_PAGE_ID", "")
+    facebook_page_access_token: str = os.getenv("FACEBOOK_PAGE_ACCESS_TOKEN", "")
+    facebook_api_version: str = os.getenv("FACEBOOK_API_VERSION", "v24.0")
+    facebook_posting_enabled: bool = _bool("FACEBOOK_POSTING_ENABLED", False)
+
     # Owner LINE summary.
     line_channel_access_token: str = os.getenv("LINE_CHANNEL_ACCESS_TOKEN", "")
     line_user_id: str = os.getenv("LINE_USER_ID", "")
@@ -133,6 +139,12 @@ class Settings:
             ):
                 if not value:
                     missing.append(name)
+
+        if publish and self.facebook_posting_enabled:
+            if not self.facebook_page_id:
+                missing.append("FACEBOOK_PAGE_ID")
+            if not self.facebook_page_access_token:
+                missing.append("FACEBOOK_PAGE_ACCESS_TOKEN")
 
         if publish and self.line_daily_summary_required:
             if not self.line_channel_access_token:
