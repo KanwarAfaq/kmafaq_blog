@@ -13,7 +13,7 @@ export default function LineSubscribePage() {
   useEffect(() => {
     if (configuredAddFriendUrl) return;
     let active = true;
-    fetch('/api/site-ops?action=line-public')
+    fetch('/api/line-preferences?action=line-public')
       .then(async (response) => {
         const payload = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(payload.error || 'LINE information is unavailable.');
