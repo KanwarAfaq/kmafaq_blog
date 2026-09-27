@@ -54,7 +54,7 @@ export default function BusinessDetailPage() {
   const hasPublicWebsite = /^https?:\/\//i.test(business.website_url || '');
   const businessSchema = {
     '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
+    '@type': (business.city || business.country) ? 'LocalBusiness' : 'Organization',
     name: business.name,
     url: canonicalUrl,
     description: business.description || business.short_description,
