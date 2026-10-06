@@ -1,6 +1,12 @@
 name: KM Afaq AI Agent - 5 Urdu + 5 English Daily
 
 on:
+  # Temporary smoke-test trigger for this repair. It will be removed after the live verification run.
+  push:
+    branches: [main]
+    paths:
+      - 'agent/**'
+      - '.github/workflows/ai-agent.yml'
   workflow_dispatch:
     inputs:
       task:
@@ -47,6 +53,9 @@ jobs:
           cache: pip
           cache-dependency-path: agent/requirements.txt
       - run: pip install -r agent/requirements.txt
+
+      - name: Run unit tests
+        run: python -m unittest discover -s agent/tests -v
 
       - name: Decide task/language
         id: plan
@@ -103,7 +112,10 @@ jobs:
           PUBLISH_TIMEZONE: Asia/Karachi
           DUPLICATE_WINDOW_DAYS: '3'
           ALLOW_PUBLISH_WITHOUT_IMAGE: 'false'
+          IMAGE_PROVIDER_ORDER: pexels,pixabay,openverse,gemini
+          GEMINI_IMAGE_TIMEOUT_SECONDS: '12'
           LINE_DAILY_SUMMARY_REQUIRED: 'true'
+          PYTHONUNBUFFERED: '1'
         shell: bash
         run: |
           if [ "${{ steps.plan.outputs.task }}" = "summary" ]; then
