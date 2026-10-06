@@ -4,7 +4,7 @@ import json
 import logging
 import tempfile
 import time
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -78,7 +78,7 @@ SLOTS = [
 def _scheduled_at(settings: Settings, publish_date: str, local_time: str) -> str:
     zone = ZoneInfo(settings.publish_timezone)
     local = datetime.fromisoformat(f"{publish_date}T{local_time}:00").replace(tzinfo=zone)
-    return local.astimezone().isoformat()
+    return local.astimezone(UTC).isoformat()
 
 
 def _slug(publish_date: str, local_time: str, language: str, topic: str) -> str:
