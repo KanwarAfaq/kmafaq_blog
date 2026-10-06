@@ -1,12 +1,6 @@
 name: KM Afaq AI Agent - 5 Urdu + 5 English Daily
 
 on:
-  # Temporary smoke-test trigger for this repair. It will be removed after the live verification run.
-  push:
-    branches: [main]
-    paths:
-      - 'agent/**'
-      - '.github/workflows/ai-agent.yml'
   workflow_dispatch:
     inputs:
       task:
