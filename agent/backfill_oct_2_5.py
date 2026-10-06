@@ -209,6 +209,49 @@ def _run_slot(settings: Settings, repo: PostRepository, llm: FallbackLLM, row) -
         }
 
 
+def _verify_all(settings: Settings, repo: PostRepository) -> dict:
+    website_ok = 0
+    facebook_ok = 0
+    counts: dict[str, dict[str, int]] = {
+        date: {"ur": 0, "en": 0}
+        for date in ("2026-10-02", "2026-10-03", "2026-10-04", "2026-10-05")
+    }
+    missing: list[dict] = []
+
+    for row in SLOTS:
+        publish_date, local_time, language, topic, *_ = row
+        slug = _slug(publish_date, local_time, language, topic)
+        post = repo.get_post_by_slug(slug)
+        if not post:
+            missing.append({"date": publish_date, "time": local_time, "language": language, "missing": "website"})
+            continue
+
+        website_ok += 1
+        counts[publish_date][language] += 1
+        fb = repo.latest_facebook_post(str(post["id"]))
+        if fb and fb.get("status") == "published" and fb.get("facebook_post_id"):
+            facebook_ok += 1
+        else:
+            missing.append(
+                {
+                    "date": publish_date,
+                    "time": local_time,
+                    "language": language,
+                    "missing": "facebook",
+                    "post_id": post.get("id"),
+                    "facebook_status": (fb or {}).get("status"),
+                    "facebook_error": (fb or {}).get("error_message"),
+                }
+            )
+
+    return {
+        "website_verified": website_ok,
+        "facebook_verified": facebook_ok,
+        "counts": counts,
+        "missing": missing,
+    }
+
+
 def run_backfill() -> dict:
     settings = Settings()
     missing = settings.validate_for_run(publish=True, generate_image=True)
@@ -268,16 +311,23 @@ def run_backfill() -> dict:
         if lang in {"ur", "en"}:
             counts[date][lang] += 1
 
+    verification = _verify_all(settings, repo)
     summary = {
         "requested_slots": len(SLOTS),
-        "completed": len(results),
+        "completed_or_repaired": len(results),
         "failures": len(failures),
         "counts_from_this_run": counts,
+        "verification": verification,
         "failure_details": failures,
     }
     print("BACKFILL_SUMMARY " + json.dumps(summary, ensure_ascii=False, indent=2))
-    if failures:
-        raise RuntimeError(f"Backfill completed with {len(failures)} failed slot(s)")
+    if failures or verification["website_verified"] != 40 or verification["facebook_verified"] != 40:
+        raise RuntimeError(
+            "Backfill verification failed: "
+            f"slot_failures={len(failures)}, "
+            f"website={verification['website_verified']}/40, "
+            f"facebook={verification['facebook_verified']}/40"
+        )
     return summary
 
 
