@@ -15,6 +15,11 @@ class OctoberBackfillManifestTest(unittest.TestCase):
             self.assertEqual(counts[(publish_date, "ur")], 5)
             self.assertEqual(counts[(publish_date, "en")], 5)
 
+    def test_topic_provenance_is_expected(self):
+        providers = Counter(row[5] for row in SLOTS)
+        self.assertEqual(providers["github_actions_log"], 37)
+        self.assertEqual(providers["historical_news_archive"], 3)
+
     def test_deterministic_slugs_are_unique(self):
         slugs = [_slug(row[0], row[1], row[2], row[3]) for row in SLOTS]
         self.assertEqual(len(slugs), len(set(slugs)))
