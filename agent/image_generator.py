@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 
 import requests
 from google import genai
+from google.genai import types
 
 from .config import Settings
 from .models import CoverImage
@@ -79,7 +80,12 @@ def _download_image(settings: Settings, url: str, output_path: Path) -> Path:
 def _gemini(settings: Settings, prompt: str, output_path: Path) -> CoverImage | None:
     if not settings.gemini_api_key:
         return None
-    client = genai.Client(api_key=settings.gemini_api_key)
+    client = genai.Client(
+        api_key=settings.gemini_api_key,
+        http_options=types.HttpOptions(
+            retry_options=types.HttpRetryOptions(attempts=1),
+        ),
+    )
     interaction = client.interactions.create(
         model=settings.gemini_image_model,
         input=(
@@ -93,6 +99,7 @@ def _gemini(settings: Settings, prompt: str, output_path: Path) -> CoverImage | 
             "aspect_ratio": "16:9",
             "image_size": "1K",
         },
+        timeout=float(settings.gemini_image_timeout_seconds),
     )
     image = getattr(interaction, "output_image", None)
     if image is None or not getattr(image, "data", None):
@@ -206,14 +213,23 @@ def _openverse(settings: Settings, prompt: str, output_path: Path) -> CoverImage
 
 
 def generate_cover_image(settings: Settings, prompt: str, output_path: Path) -> CoverImage:
-    """Gemini -> Pexels -> Pixabay -> Openverse. Raises only after every source fails."""
+    """Try configured image providers in order and fail only after every source fails."""
     failures: list[str] = []
-    providers = (
-        ("gemini", _gemini),
-        ("pexels", _pexels),
-        ("pixabay", _pixabay),
-        ("openverse", _openverse),
-    )
+    provider_map = {
+        "gemini": _gemini,
+        "pexels": _pexels,
+        "pixabay": _pixabay,
+        "openverse": _openverse,
+    }
+    configured = [name.strip().casefold() for name in settings.image_provider_order if name.strip()]
+    providers = [(name, provider_map[name]) for name in configured if name in provider_map]
+    if not providers:
+        raise AllImageProvidersFailed("IMAGE_PROVIDER_ORDER did not contain a supported provider")
+
+    ignored = [name for name in configured if name not in provider_map]
+    if ignored:
+        LOGGER.warning("Ignoring unknown image providers: %s", ", ".join(ignored))
+
     for name, provider in providers:
         try:
             result = provider(settings, prompt, output_path)

@@ -63,10 +63,15 @@ class Settings:
     brave_search_api_key: str = os.getenv("BRAVE_SEARCH_API_KEY", os.getenv("BRAVE_API_KEY", ""))
     research_max_results: int = _int("RESEARCH_MAX_RESULTS", 5)
 
-    # Cover image fallbacks: Gemini -> Pexels -> Pixabay -> Openverse.
+    # Cover image fallbacks. Prefer stock providers while Gemini image quota is unavailable.
     pexels_api_key: str = os.getenv("PEXELS_API_KEY", "")
     pixabay_api_key: str = os.getenv("PIXABAY_API_KEY", "")
     image_download_max_mb: int = _int("IMAGE_DOWNLOAD_MAX_MB", 15)
+    image_provider_order: tuple[str, ...] = _csv(
+        "IMAGE_PROVIDER_ORDER",
+        "pexels,pixabay,openverse,gemini",
+    )
+    gemini_image_timeout_seconds: int = _int("GEMINI_IMAGE_TIMEOUT_SECONDS", 12)
 
     # Publishing policy: at most 5 posts/language/Pakistan day.
     daily_post_limit_per_language: int = _int("DAILY_POST_LIMIT_PER_LANGUAGE", 5)
@@ -85,7 +90,8 @@ class Settings:
     cloudinary_api_secret: str = os.getenv("CLOUDINARY_API_SECRET", "")
     cloudinary_folder: str = os.getenv("CLOUDINARY_AGENT_FOLDER", "km-afaq/blog")
 
-    # Facebook Page publishing. Failures are non-blocking for website publishing.
+    # Facebook Page publishing. Website writes stay durable, but an enabled Facebook failure
+    # is surfaced as a failed agent run after the audit row is recorded.
     facebook_page_id: str = os.getenv("FACEBOOK_PAGE_ID", "")
     facebook_page_access_token: str = os.getenv("FACEBOOK_PAGE_ACCESS_TOKEN", "")
     facebook_api_version: str = os.getenv("FACEBOOK_API_VERSION", "v24.0")
