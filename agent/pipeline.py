@@ -217,4 +217,11 @@ def run_agent(
             "daily_line_summary": daily_summary,
         }
         print(json.dumps(summary, ensure_ascii=False, indent=2))
+
+        if settings.facebook_posting_enabled and facebook.status != "published":
+            raise RuntimeError(
+                "Website publish succeeded but Facebook cross-post failed "
+                f"(status={facebook.status}, error={facebook.error or 'unknown error'})"
+            )
+
         return summary
