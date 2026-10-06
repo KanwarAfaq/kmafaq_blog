@@ -138,9 +138,29 @@ class PostRepository:
         )
         return response.data[0] if response.data else None
 
+    def get_post_by_slug(self, slug: str) -> dict[str, Any] | None:
+        response = (
+            self.client.table("posts")
+            .select("id,title,slug,excerpt,language,cover_image_url,status,created_at")
+            .eq("slug", slug)
+            .limit(1)
+            .execute()
+        )
+        return response.data[0] if response.data else None
+
+    def latest_facebook_post(self, post_id: str) -> dict[str, Any] | None:
+        response = (
+            self.client.table("facebook_posts")
+            .select("post_id,status,facebook_post_id,error_message,article_url,image_url,created_at")
+            .eq("post_id", post_id)
+            .order("created_at", desc=True)
+            .limit(1)
+            .execute()
+        )
+        return response.data[0] if response.data else None
+
     def slug_exists(self, slug: str) -> bool:
-        response = self.client.table("posts").select("id").eq("slug", slug).limit(1).execute()
-        return bool(response.data)
+        return self.get_post_by_slug(slug) is not None
 
     def unique_slug(self, slug: str) -> str:
         if not self.slug_exists(slug):
@@ -159,6 +179,7 @@ class PostRepository:
         cover: CoverImage | None,
         *,
         research_provider: str | None,
+        created_at: str | None = None,
     ) -> PublishResult:
         article.slug = self.unique_slug(article.slug)
         row: dict[str, Any] = {
@@ -180,6 +201,9 @@ class PostRepository:
             "is_ai_generated": True,
             "agent_version": __version__,
         }
+        if created_at:
+            row["created_at"] = created_at
+
         if media:
             row.update(
                 {
