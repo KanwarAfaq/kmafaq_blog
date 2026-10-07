@@ -71,13 +71,13 @@ export default function SEO({
     isPartOf: { '@id': `${SITE.url}/#website` },
   };
 
-  const schemas = [organizationSchema, personSchema, websiteSchema, webPageSchema, ...schema].filter(Boolean);
+  const schemas = noIndex ? [] : [organizationSchema, personSchema, websiteSchema, webPageSchema, ...schema].filter(Boolean);
 
   return (
     <Helmet htmlAttributes={{ lang: language, dir: isUrdu ? 'rtl' : 'ltr' }}>
       <title>{pageTitle}</title>
       <meta name="description" content={pageDescription} />
-      <link rel="canonical" href={canonical} />
+      {!noIndex && <link rel="canonical" href={canonical} />}
       <meta name="robots" content={noIndex ? 'noindex,nofollow' : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'} />
       <meta name="googlebot" content={noIndex ? 'noindex,nofollow' : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'} />
 
@@ -85,7 +85,7 @@ export default function SEO({
       <meta property="og:site_name" content={SITE.name} />
       <meta property="og:title" content={pageTitle} />
       <meta property="og:description" content={pageDescription} />
-      <meta property="og:url" content={canonical} />
+      {!noIndex && <meta property="og:url" content={canonical} />}
       <meta property="og:image" content={shareImage} />
       <meta property="og:image:alt" content={shareImageAlt} />
       <meta property="og:locale" content={isUrdu ? 'ur_PK' : 'en_US'} />
