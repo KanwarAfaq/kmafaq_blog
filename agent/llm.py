@@ -33,17 +33,29 @@ class FallbackLLM:
         max_output_tokens: int = 7000,
     ) -> tuple[dict[str, Any], str]:
         failures: list[str] = []
+        max_attempts = 2
         for provider in self.settings.provider_order():
-            try:
-                if provider == "groq" and self.settings.groq_api_key:
-                    return self._groq(system, prompt, temperature, max_output_tokens), "groq"
-                if provider == "gemini" and self.settings.gemini_api_key:
-                    return self._gemini(system, prompt, temperature, max_output_tokens), "gemini"
-                if provider == "openrouter" and self.settings.openrouter_api_key:
-                    return self._openrouter(system, prompt, temperature, max_output_tokens), "openrouter"
-            except Exception as exc:
-                LOGGER.warning("%s generation failed; trying fallback: %s", provider, exc)
-                failures.append(f"{provider}: {exc}")
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    if provider == "groq" and self.settings.groq_api_key:
+                        return self._groq(system, prompt, temperature, max_output_tokens), "groq"
+                    if provider == "gemini" and self.settings.gemini_api_key:
+                        return self._gemini(system, prompt, temperature, max_output_tokens), "gemini"
+                    if provider == "openrouter" and self.settings.openrouter_api_key:
+                        return self._openrouter(system, prompt, temperature, max_output_tokens), "openrouter"
+                    break
+                except Exception as exc:
+                    if attempt < max_attempts:
+                        LOGGER.warning(
+                            "%s generation failed on attempt %d/%d; retrying: %s",
+                            provider,
+                            attempt,
+                            max_attempts,
+                            exc,
+                        )
+                        continue
+                    LOGGER.warning("%s generation failed; trying fallback: %s", provider, exc)
+                    failures.append(f"{provider}: {exc}")
         raise AllProvidersFailed("; ".join(failures) or "No configured LLM provider")
 
     def _groq(self, system: str, prompt: str, temperature: float, max_output_tokens: int) -> dict[str, Any]:
