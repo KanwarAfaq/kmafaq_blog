@@ -1,0 +1,23 @@
+name: Sitemap safety
+on:
+  pull_request:
+    paths:
+      - 'api/sitemap.js'
+      - 'tests/sitemap.test.mjs'
+      - '.github/workflows/sitemap-safety.yml'
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test fail-safe sitemap behavior
+        env:
+          SUPABASE_URL: ''
+          SUPABASE_ANON_KEY: ''
+          VITE_SUPABASE_URL: ''
+          VITE_SUPABASE_ANON_KEY: ''
+        run: node --test tests/sitemap.test.mjs

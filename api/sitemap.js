@@ -35,7 +35,7 @@ function escapeXml(value = '') {
 }
 
 async function fetchRows({ table, status, prefix }) {
-  if (!SUPABASE_URL || !SUPABASE_KEY) return [];
+  if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('Missing sitemap database configuration');
 
   const pageSize = 1000;
   const rows = [];
@@ -61,8 +61,7 @@ async function fetchRows({ table, status, prefix }) {
       rows.push(...(page || []));
       if (!Array.isArray(page) || page.length < pageSize) break;
     } catch (error) {
-      console.warn('[sitemap]', error.message);
-      break;
+      throw new Error(`Sitemap source unavailable: ${error.message}`);
     }
   }
 
@@ -82,7 +81,17 @@ export default async function handler(req, res) {
     return;
   }
 
-  const dynamicGroups = await Promise.all(SOURCES.map(fetchRows));
+  let dynamicGroups;
+  try {
+    dynamicGroups = await Promise.all(SOURCES.map(fetchRows));
+  } catch (error) {
+    console.error('[sitemap] Cannot safely publish an incomplete sitemap:', error.message);
+    res.statusCode = 503;
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.end('Sitemap temporarily unavailable');
+    return;
+  }
   const urls = [
     ...STATIC_ROUTES.map((route) => ({ loc: `${SITE_URL}${route}`, lastmod: null })),
     ...dynamicGroups.flat(),
