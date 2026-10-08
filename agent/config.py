@@ -37,7 +37,11 @@ class Settings:
     site_url: str = os.getenv("SITE_URL", "https://kmafaq.online").rstrip("/")
     line_public_base_url: str = os.getenv("LINE_PUBLIC_BASE_URL", "").rstrip("/")
 
-    # Text generation: Groq -> Gemini -> OpenRouter Free by default.
+    # Text generation: CGU local -> Groq -> Gemini -> OpenRouter by default.
+    cgu_api_key: str = os.getenv("CGU_API_KEY", "")
+    cgu_api_url: str = os.getenv("CGU_API_URL", "https://air.cgu.edu.tw/cgullmapi/v1/chat/completions")
+    cgu_model: str = os.getenv("CGU_MODEL", "gpt-oss:20b")
+    cgu_fallback_models: tuple[str, ...] = _csv("CGU_FALLBACK_MODELS", "gpt-6-luna,gpt-5.6-luna")
     groq_api_key: str = os.getenv("GROQ_API_KEY", "")
     groq_model: str = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
     gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
@@ -45,7 +49,7 @@ class Settings:
     gemini_image_model: str = os.getenv("GEMINI_IMAGE_MODEL", "gemini-3.1-flash-image")
     openrouter_api_key: str = os.getenv("OPENROUTER_API_KEY", "")
     openrouter_model: str = os.getenv("OPENROUTER_MODEL", "openrouter/free")
-    llm_primary: str = os.getenv("LLM_PRIMARY", "groq").strip().lower()
+    llm_primary: str = os.getenv("LLM_PRIMARY", "cgu").strip().lower()
 
     # Trend discovery + web research.
     trend_geos: tuple[str, ...] = _csv("TREND_GEOS", "US,PK,IN,GB,CA")
@@ -119,14 +123,14 @@ class Settings:
     allow_publish_without_image: bool = _bool("ALLOW_PUBLISH_WITHOUT_IMAGE", False)
 
     def provider_order(self) -> tuple[str, ...]:
-        available = ["groq", "gemini", "openrouter"]
-        primary = self.llm_primary if self.llm_primary in available else "groq"
+        available = ["cgu", "groq", "gemini", "openrouter"]
+        primary = self.llm_primary if self.llm_primary in available else "cgu"
         return tuple([primary, *[name for name in available if name != primary]])
 
     def validate_for_run(self, *, publish: bool, generate_image: bool) -> list[str]:
         missing: list[str] = []
-        if not (self.groq_api_key or self.gemini_api_key or self.openrouter_api_key):
-            missing.append("GROQ_API_KEY or GEMINI_API_KEY or OPENROUTER_API_KEY")
+        if not (self.cgu_api_key or self.groq_api_key or self.gemini_api_key or self.openrouter_api_key):
+            missing.append("CGU_API_KEY or GROQ_API_KEY or GEMINI_API_KEY or OPENROUTER_API_KEY")
 
         if publish:
             for name, value in (

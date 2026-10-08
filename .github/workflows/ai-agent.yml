@@ -79,6 +79,10 @@ jobs:
       - name: Run agent
         env:
           SITE_URL: https://kmafaq.online
+          CGU_API_KEY: ${{ secrets.CGU_API_KEY }}
+          CGU_MODEL: gpt-oss:20b
+          CGU_FALLBACK_MODELS: gpt-6-luna,gpt-5.6-luna
+          LLM_PRIMARY: cgu
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GROQ_MODEL: ${{ secrets.GROQ_MODEL }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
