@@ -42,7 +42,7 @@ async function fetchRows({ table, status, prefix }) {
 
   for (let offset = 0; offset < 50000; offset += pageSize) {
     const endpoint = new URL(`/rest/v1/${table}`, SUPABASE_URL);
-    endpoint.searchParams.set('select', 'slug,created_at,updated_at');
+    endpoint.searchParams.set('select', 'slug,created_at');
     endpoint.searchParams.set('status', `eq.${status}`);
     endpoint.searchParams.set('order', 'created_at.desc');
     endpoint.searchParams.set('limit', String(pageSize));
@@ -69,7 +69,7 @@ async function fetchRows({ table, status, prefix }) {
     .filter((row) => row?.slug)
     .map((row) => ({
       loc: `${SITE_URL}${prefix}${encodeURIComponent(row.slug)}`,
-      lastmod: row.updated_at || row.created_at || null,
+      lastmod: row.created_at || null,
     }));
 }
 
