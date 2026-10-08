@@ -19,7 +19,7 @@ class AllProvidersFailed(RuntimeError):
 
 
 class FallbackLLM:
-    """JSON-only LLM wrapper: Groq, Gemini, then OpenRouter free models."""
+    """JSON-only LLM wrapper: CGU first, then Groq, Gemini and OpenRouter."""
 
     def __init__(self, settings: Settings):
         self.settings = settings
@@ -35,6 +35,8 @@ class FallbackLLM:
         failures: list[str] = []
         for provider in self.settings.provider_order():
             try:
+                if provider == "cgu" and self.settings.cgu_api_key:
+                    return self._cgu(system, prompt, temperature, max_output_tokens), "cgu"
                 if provider == "groq" and self.settings.groq_api_key:
                     return self._groq(system, prompt, temperature, max_output_tokens), "groq"
                 if provider == "gemini" and self.settings.gemini_api_key:
@@ -45,6 +47,42 @@ class FallbackLLM:
                 LOGGER.warning("%s generation failed; trying fallback: %s", provider, exc)
                 failures.append(f"{provider}: {exc}")
         raise AllProvidersFailed("; ".join(failures) or "No configured LLM provider")
+
+    def _cgu(self, system: str, prompt: str, temperature: float, max_output_tokens: int) -> dict[str, Any]:
+        """Try CGU's local model first; if unavailable, try authorized chat models.
+
+        A model-level failure stays within CGU before external providers are attempted.
+        """
+        models = dict.fromkeys((self.settings.cgu_model, *self.settings.cgu_fallback_models))
+        errors = []
+        for model in models:
+            if not model:
+                continue
+            try:
+                response = requests.post(
+                    self.settings.cgu_api_url,
+                    headers={
+                        "Authorization": f"Bearer {self.settings.cgu_api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "model": model,
+                        "messages": [
+                            {"role": "system", "content": system},
+                            {"role": "user", "content": prompt},
+                        ],
+                        "temperature": temperature,
+                        "max_tokens": max_output_tokens,
+                    },
+                    timeout=max(self.settings.request_timeout, 45),
+                )
+                response.raise_for_status()
+                content = response.json()["choices"][0]["message"]["content"]
+                return extract_json(content or "")
+            except Exception as exc:
+                LOGGER.warning("CGU model %s failed; trying next model: %s", model, type(exc).__name__)
+                errors.append(f"{model}: {type(exc).__name__}")
+        raise RuntimeError("All CGU chat models failed: " + "; ".join(errors))
 
     def _groq(self, system: str, prompt: str, temperature: float, max_output_tokens: int) -> dict[str, Any]:
         client = Groq(api_key=self.settings.groq_api_key)
