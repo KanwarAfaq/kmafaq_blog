@@ -186,7 +186,7 @@ export default function BlogPostPage() {
   };
 
   const share = async () => {
-    const url = window.location.href;
+    const url = `https://kmafaq.online/blog/${encodeURIComponent(post.slug)}`;
     if (navigator.share) {
       await navigator.share({ title: post.title, url }).catch(() => {});
       return;
