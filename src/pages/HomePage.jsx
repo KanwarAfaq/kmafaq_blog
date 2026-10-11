@@ -133,7 +133,7 @@ export default function HomePage() {
           <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
             <img
               src="/images/about-km-afaq.svg"
-              alt="KM Afaq profile illustration"
+              alt="KM Afaq AI automation and web development profile illustration"
               loading="lazy"
               decoding="async"
               className="aspect-square w-full object-cover"
