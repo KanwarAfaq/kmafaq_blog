@@ -85,7 +85,8 @@ export default function DigitalProductDetailPage() {
               <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-secondary">{product.category}</span>
               <h1 className="mt-4 text-3xl font-black text-ink sm:text-4xl">{product.name}</h1>
               <p className="mt-3 text-lg leading-7 text-gray-600">{product.short_description}</p>
-              <div className="article-prose mt-7 text-gray-700"><ReactMarkdown>{product.description || product.short_description}</ReactMarkdown></div>
+              <h2 className="mt-6 text-2xl font-black text-ink">About {product.name}</h2>
+               <div className="article-prose mt-7 text-gray-700"><ReactMarkdown>{product.description || product.short_description}</ReactMarkdown></div>
               {product.preview_url ? <a href={product.preview_url} target="_blank" rel="noreferrer" className="mt-6 inline-flex items-center gap-2 font-black text-primary"><ExternalLink className="h-4 w-4" /> Preview resource</a> : null}
             </div>
           </article>

@@ -25,6 +25,7 @@ export default function HomePage() {
               AI • Technology • Online Earning
             </p>
             <h1 className="text-4xl font-black tracking-tight sm:text-5xl lg:text-7xl">AI Automation & Tech Expert</h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-blue-50">AI automation, web development and practical technology guides for businesses and readers in Urdu and English.</p>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-blue-50 sm:text-xl" dir="rtl" lang="ur">
               اے آئی آٹومیشن، ویب ٹیکنالوجی اور آن لائن ارننگ کے عملی حل
             </p>

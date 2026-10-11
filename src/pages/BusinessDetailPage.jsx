@@ -111,7 +111,7 @@ export default function BusinessDetailPage() {
         </section>
 
         <form onSubmit={submit} className="h-fit rounded-3xl border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-24">
-          <h2 className="text-xl font-black text-ink">Request a quote</h2>
+          <h2 className="text-xl font-black text-ink">Request a quote from {business.name}</h2>
           <p className="mt-1 text-sm text-gray-500">Send a direct inquiry about this business or service.</p>
           <div className="mt-4 space-y-3">
             <input required placeholder="Name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} className="w-full rounded-xl border border-gray-300 px-4 py-3" />

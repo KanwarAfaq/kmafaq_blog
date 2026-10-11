@@ -20,7 +20,7 @@ const LANGUAGE_META = {
   },
   en: {
     label: 'English Blog',
-    title: 'Fresh stories, useful context, better reading',
+    title: 'English articles on AI, technology and world affairs',
     description: 'Current articles across AI, technology, business, politics, sports, world affairs, science, and health.',
     path: '/blog/english',
     dir: 'ltr',
@@ -104,7 +104,8 @@ function LanguageListing({ language }) {
               <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> KM Afaq
             </span>
             <h1 className="mt-5 text-3xl font-black tracking-tight text-ink sm:text-5xl">{meta.title}</h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-gray-600 sm:text-lg">{meta.description}</p>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-gray-600 sm:text-lg">{meta.title} — {meta.description}</p>
+            <h2 className="mt-6 text-xl font-black text-ink">{meta.title}</h2>
             <div className="mt-7"><LanguageNav current={language} /></div>
           </div>
         </div>
@@ -181,8 +182,8 @@ export default function BlogPage({ language = null }) {
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-black"><Newspaper className="h-4 w-4" /> Current stories</span>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-black"><Languages className="h-4 w-4" /> Urdu + English</span>
             </div>
-            <h1 className="mt-6 text-4xl font-black tracking-tight sm:text-6xl">News, technology and ideas worth your time.</h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-gray-300">A cleaner reading experience for timely stories, useful explainers and practical insights — published separately in Urdu and English.</p>
+            <h1 className="mt-6 text-4xl font-black tracking-tight sm:text-6xl">Urdu & English Articles: News, Technology and Ideas</h1>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-gray-300">Read Urdu and English articles on AI, technology, business, science and world affairs, with useful explanations and practical insight.</p>
             <div className="mt-8"><LanguageNav /></div>
           </div>
         </div>

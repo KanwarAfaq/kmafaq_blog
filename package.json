@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "vite",
     "seo": "node scripts/generate-seo.mjs",
-    "build": "npm run seo && vite build",
+    "build": "npm run seo && vite build && node scripts/prerender.mjs && node --test tests/seo-pages.test.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
     "worker": "python scripts/local_workers.py",

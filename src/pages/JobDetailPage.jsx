@@ -82,7 +82,8 @@ export default function JobDetailPage() {
               {job.location ? <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1.5"><MapPin className="h-3.5 w-3.5" /> {job.location}</span> : null}
               {job.salary_text ? <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-emerald-700">{job.salary_text}</span> : null}
             </div>
-            <div className="article-prose mt-8"><ReactMarkdown remarkPlugins={[remarkGfm]}>{job.description}</ReactMarkdown></div>
+            <h2 className="mt-7 text-2xl font-black text-ink">About {job.title}</h2>
+             <div className="article-prose mt-8"><ReactMarkdown remarkPlugins={[remarkGfm]}>{job.description}</ReactMarkdown></div>
           </article>
 
           <aside className="h-fit rounded-3xl border border-gray-200 bg-white p-5 shadow-sm lg:sticky lg:top-24">

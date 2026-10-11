@@ -222,7 +222,7 @@ export default function BlogPostPage() {
             <header className="mt-7 text-start">
               <div className="flex flex-wrap items-center gap-2"><span className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-black text-primary"><Tag className="h-3.5 w-3.5" aria-hidden="true" /> {topicLabel(post.topic_category, language)}</span>{post.is_sponsored ? <span className="rounded-full bg-amber-100 px-3 py-1.5 text-xs font-black text-amber-800">Sponsored{post.sponsor_name ? ` by ${post.sponsor_name}` : ''}</span> : null}</div>
               <h1 className="mt-4 text-3xl font-black leading-tight tracking-tight text-ink sm:text-5xl lg:text-[3.4rem]">{post.title}</h1>
-              {post.excerpt ? <p className="mt-5 text-lg leading-8 text-gray-600 sm:text-xl">{post.excerpt}</p> : null}
+              <p className="mt-5 text-lg leading-8 text-gray-600 sm:text-xl">{post.title} — {post.excerpt || (isUrdu ? 'اس مضمون میں اہم معلومات اور پس منظر پڑھیں۔' : 'Read the key facts and context in this article.')}</p>
 
               <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm font-semibold text-gray-500">
                 <span className="inline-flex items-center gap-2">
@@ -255,6 +255,7 @@ export default function BlogPostPage() {
 
           <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
             <div className="min-w-0 rounded-[2rem] border border-gray-200 bg-white px-5 py-7 shadow-[0_10px_35px_rgba(15,23,42,.04)] sm:px-8 sm:py-10 lg:px-10">
+              <h2 className="mb-5 text-2xl font-black leading-8 text-ink">{isUrdu ? 'تفصیلات: ' : 'About '}{post.title}</h2>
               <div className="article-prose text-base leading-8 text-gray-700 sm:text-[1.08rem] sm:leading-9">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
@@ -272,6 +273,7 @@ export default function BlogPostPage() {
                   {markdown}
                 </ReactMarkdown>
               </div>
+              {/^https?:\/\//i.test(post.source_url || '') && <p className="mt-6 text-sm text-gray-600"><a className="font-bold text-primary hover:underline" href={post.source_url} target="_blank" rel="noopener noreferrer">{isUrdu ? 'اصل ماخذ دیکھیں' : 'Read original source'}</a> — {isUrdu ? 'اشاعت اور تفصیلات کی تصدیق کریں۔' : 'Verify publication details with the source.'}</p>}
             </div>
 
             <ArticleSidebar posts={related} language={language} headings={headings} />

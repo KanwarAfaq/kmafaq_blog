@@ -99,7 +99,7 @@ export default function SEO({
 
       {schemas.map((item, index) => (
         <script type="application/ld+json" key={`${item['@type']}-${item['@id'] || index}`}>
-          {JSON.stringify(item)}
+          {JSON.stringify(item).replace(/</g, '\\u003c')}
         </script>
       ))}
     </Helmet>
