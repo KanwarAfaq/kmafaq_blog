@@ -23,6 +23,22 @@ const related=page=>{
   .filter(p=>p.score>0).sort((a,b)=>b.score-a.score).slice(0,2).map(x=>({path:x.p.path,text:x.p.title})):[];
  return [...matched,...basics].filter((p,i,list)=>p.path!==page.path&&all.has(p.path)&&list.findIndex(x=>x.path===p.path)===i).slice(0,4);
 };
+
+const publicArticleLinks=page=>{
+ if(!['/','/blog','/blog/english','/blog/urdu'].includes(page.path))return '';
+ const posts=pages.filter(item=>item.kind==='BlogPosting'&&/^\/blog\/[a-z0-9_%/-]+$/i.test(item.path))
+  .sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+ const languages=page.path==='/blog/english'?['en']:page.path==='/blog/urdu'?['ur']:['en','ur'];
+ const limit=page.path==='/'?12:600;
+ const sections=languages.map(lang=>{
+  const articles=posts.filter(item=>(item.language==='ur'?'ur':'en')===lang).slice(0,limit);
+  if(!articles.length)return '';
+  const label=lang==='ur'?'Urdu articles':'English articles';
+  return '<section><h2>'+escape(label)+'</h2><ul>'+
+   articles.map(item=>'<li><a href="'+escape(item.path)+'">'+escape(item.title)+'</a></li>').join('')+'</ul></section>';
+ }).filter(Boolean);
+ return sections.length?'<nav aria-label="Browse published articles" data-seo-blog-hub="true">'+sections.join('')+'</nav>':'';
+};
 const safeDate=value=>value&&!Number.isNaN(Date.parse(value))?new Date(value).toISOString():undefined;
 for(const page of pages){
  const fullUrl=site+page.path,description=clean(page.description||page.title);
@@ -64,6 +80,7 @@ for(const page of pages){
   image?'<figure><img loading="lazy" src="'+escape(image)+'" alt="'+escape(focus+' illustration or cover')+'" style="max-width:min(100%,48rem);height:auto" /></figure>':'',
   '<h2>'+escape((page.language==='ur'?'مزید تفصیل: ':'About ')+focus)+'</h2>',
   articleContent||'<p>'+escape(description)+'</p>',
+  publicArticleLinks(page),
   links.length?'<nav aria-label="Related pages"><h2>Related articles and resources</h2><ul>'+
    links.map(l=>'<li><a href="'+escape(l.path)+'">'+escape(l.text)+'</a></li>').join('')+'</ul></nav>':'',
   resource?'<p><a href="'+escape(resource)+'" rel="noopener noreferrer">'+escape(resourceLabel)+'</a> — consult this source for current information.</p>':'',
