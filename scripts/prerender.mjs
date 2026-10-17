@@ -38,6 +38,23 @@ for(const page of pages){
    ...(safeDate(page.date)?{datePublished:safeDate(page.date),dateModified:safeDate(page.modified)||safeDate(page.date)}:{})}:{}),
   ...(image?{image}:{}),...(source?{citation:source}:{})};
  const links=related(page);
+ // Search crawlers must receive the actual public article, not just its excerpt.
+ // Remove markup/scripts and escape the resulting text to prevent HTML injection.
+ const paragraphs=String(page.content||'')
+  .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,' ')
+  .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,' ')
+  .replace(/<\/(?:p|div|li|h[1-6])\s*>/gi,'\n\n')
+  .replace(/<br\s*\/?>/gi,'\n\n')
+  .replace(/<[^>]*>/g,' ')
+  .replace(/^\s{0,3}#{1,6}\s+/gm,'')
+  .slice(0,40000)
+  .split(/\n\s*\n/)
+  .map(part=>part.replace(/\s+/g,' ').trim())
+  .filter(Boolean)
+  .slice(0,80);
+ const articleContent=page.kind==='BlogPosting'&&paragraphs.length
+  ?'<section data-seo-article-body="true"><h2>Article</h2>'+paragraphs.map(part=>'<p>'+escape(part)+'</p>').join('')+'</section>'
+  :'';
  const resource=source||sources[page.path]?.url,resourceLabel=source?'Original source or publisher':sources[page.path]?.label;
  const body=[
   '<main data-seo-prerender="true" style="max-width:68rem;margin:0 auto;padding:2.5rem 1rem;font-family:system-ui,sans-serif">',
@@ -46,7 +63,7 @@ for(const page of pages){
   '<p>'+escape(lead)+'</p>',
   image?'<figure><img loading="lazy" src="'+escape(image)+'" alt="'+escape(focus+' illustration or cover')+'" style="max-width:min(100%,48rem);height:auto" /></figure>':'',
   '<h2>'+escape((page.language==='ur'?'مزید تفصیل: ':'About ')+focus)+'</h2>',
-  '<p>'+escape(description)+'</p>',
+  articleContent||'<p>'+escape(description)+'</p>',
   links.length?'<nav aria-label="Related pages"><h2>Related articles and resources</h2><ul>'+
    links.map(l=>'<li><a href="'+escape(l.path)+'">'+escape(l.text)+'</a></li>').join('')+'</ul></nav>':'',
   resource?'<p><a href="'+escape(resource)+'" rel="noopener noreferrer">'+escape(resourceLabel)+'</a> — consult this source for current information.</p>':'',

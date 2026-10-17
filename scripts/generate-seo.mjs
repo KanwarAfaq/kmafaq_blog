@@ -79,7 +79,7 @@ async function fetchTable(table, select, filters = [], limit = 1000) {
 }
 
 const [posts, products, jobs, businesses] = await Promise.all([
-  fetchTable('posts', 'slug,title,excerpt,seo_description,language,topic_category,created_at,updated_at,cover_image_url,source_url', [['status', 'eq.published']]),
+  fetchTable('posts', 'slug,title,content,excerpt,seo_description,language,topic_category,created_at,updated_at,cover_image_url,source_url', [['status', 'eq.published']]),
   fetchTable('digital_products', 'slug,name,short_description,created_at,cover_url,preview_url', [['status', 'eq.active']]),
   fetchTable('job_listings', 'slug,title,company_name,location,created_at,logo_url', [['status', 'eq.active']]),
   fetchTable('business_listings', 'slug,name,short_description,category,city,country,created_at,logo_url,website_url', [['status', 'eq.active']]),
@@ -105,7 +105,7 @@ const snapshotPages = [
   ...publicStatic.map(p=>({...p,kind:'WebPage'})),
   ...posts.filter(p=>p.slug).map(p=>({
     path:'/blog/'+encodeURIComponent(p.slug),kind:'BlogPosting',title:p.title,
-    description:p.seo_description||p.excerpt||p.title,language:p.language||'en',
+    description:p.seo_description||p.excerpt||p.title,content:p.content||'',language:p.language||'en',
     image:p.cover_image_url,source:p.source_url,date:p.created_at,modified:p.updated_at||p.created_at,
     topic:p.topic_category,
   })),

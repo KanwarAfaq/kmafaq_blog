@@ -12,6 +12,7 @@ test('every SEO snapshot has indexable metadata, focus content, links and valid 
   assert.ok(html.includes('<h2>'),'missing H2 '+page.path);
   assert.ok(html.includes('<p>'),'missing first paragraph '+page.path);
   assert.ok(html.includes('rel="canonical"'),'missing canonical '+page.path);
+  if(page.kind==='BlogPosting'&&String(page.content||'').trim())assert.ok(html.includes('data-seo-article-body="true"'),'full public article missing from initial HTML '+page.path);
   assert.ok(/<a href="\//.test(html),'missing internal link '+page.path);
   if(page.image&&/^https?:\/\//.test(page.image))assert.ok(html.includes('alt="'),'image has no alt '+page.path);
   const scripts=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
