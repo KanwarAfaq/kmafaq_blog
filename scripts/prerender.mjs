@@ -41,15 +41,15 @@ for(const page of pages){
  // Search crawlers must receive the actual public article, not just its excerpt.
  // Remove markup/scripts and escape the resulting text to prevent HTML injection.
  const paragraphs=String(page.content||'')
-  .replace(/<script\\b[^>]*>[\\s\\S]*?<\\/script>/gi,' ')
-  .replace(/<style\\b[^>]*>[\\s\\S]*?<\\/style>/gi,' ')
-  .replace(/<\\/(?:p|div|li|h[1-6])\\s*>/gi,'\\n\\n')
-  .replace(/<br\\s*\\/?>/gi,'\\n\\n')
+  .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,' ')
+  .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,' ')
+  .replace(/<\/(?:p|div|li|h[1-6])\s*>/gi,'\n\n')
+  .replace(/<br\s*\/?>/gi,'\n\n')
   .replace(/<[^>]*>/g,' ')
-  .replace(/^\\s{0,3}#{1,6}\\s+/gm,'')
+  .replace(/^\s{0,3}#{1,6}\s+/gm,'')
   .slice(0,40000)
-  .split(/\\n\\s*\\n/)
-  .map(part=>part.replace(/\\s+/g,' ').trim())
+  .split(/\n\s*\n/)
+  .map(part=>part.replace(/\s+/g,' ').trim())
   .filter(Boolean)
   .slice(0,80);
  const articleContent=page.kind==='BlogPosting'&&paragraphs.length
