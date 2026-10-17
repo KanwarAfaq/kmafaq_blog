@@ -4,6 +4,14 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 test('every SEO snapshot has indexable metadata, focus content, links and valid schema',async()=>{
  const {pages}=JSON.parse(await readFile('public/seo-pages.json','utf8'));
+ const posts=pages.filter(page=>page.kind==='BlogPosting');
+ if(posts.length){
+  const landing=await readFile(resolve('dist/blog/index.html'),'utf8');
+  assert.match(landing,/data-seo-blog-hub="true"/,'blog landing needs server-delivered article links');
+  for(const post of posts){
+   assert.ok(landing.includes('href="'+post.path+'"'),'missing crawlable article link '+post.path);
+  }
+ }
  assert.ok(pages.length>=13,'missing static pages');
  for(const page of pages){
   const path=page.path==='/'?'index.html':page.path.slice(1)+'/index.html';
