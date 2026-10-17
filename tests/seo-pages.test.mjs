@@ -4,6 +4,9 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 test('every SEO snapshot has indexable metadata, focus content, links and valid schema',async()=>{
  const {pages}=JSON.parse(await readFile('public/seo-pages.json','utf8'));
+ const redirects=JSON.parse(await readFile('vercel.json','utf8')).redirects||[];
+ assert.ok(redirects.some(rule=>rule.has?.some(condition=>condition.type==='host'&&condition.value==='www.kmafaq.online')&&rule.destination?.startsWith('https://kmafaq.online/')),'www host needs permanent canonical redirect');
+ assert.ok(pages.every(page=>!page.path.startsWith('https://www.kmafaq.online')),'wrong canonical host in SEO manifest');
  const posts=pages.filter(page=>page.kind==='BlogPosting');
  if(posts.length){
   const landing=await readFile(resolve('dist/blog/index.html'),'utf8');
