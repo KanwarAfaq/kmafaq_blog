@@ -56,7 +56,10 @@ function cleanText(value = '', max = 220) {
 }
 
 async function fetchTable(table, select, filters = [], limit = 1000) {
-  if (!supabaseUrl || !supabaseKey) return [];
+  if (!supabaseUrl || !supabaseKey) {
+    console.warn(`[seo] ${table}: missing database configuration; dynamic URLs cannot be included in this build`);
+    return [];
+  }
   const endpoint = new URL(`/rest/v1/${table}`, supabaseUrl);
   endpoint.searchParams.set('select', select);
   for (const [key, value] of filters) endpoint.searchParams.set(key, value);
@@ -73,8 +76,7 @@ async function fetchTable(table, select, filters = [], limit = 1000) {
     if (!response.ok) throw new Error(`Supabase returned ${response.status}`);
     return await response.json();
   } catch (error) {
-    console.warn(`[seo] Could not fetch ${table}: ${error.message}`);
-    return [];
+    throw new Error(`[seo] Refusing to generate a potentially incomplete sitemap: ${table} fetch failed: ${error.message}`);
   }
 }
 
