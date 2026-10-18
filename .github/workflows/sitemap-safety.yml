@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - 'api/sitemap.js'
+      - 'package.json'
+      - 'scripts/remove-static-sitemap.mjs'
+      - 'tests/sitemap-routing.test.mjs'
       - 'scripts/generate-seo.mjs'
       - 'scripts/prerender.mjs'
       - 'tests/seo-pages.test.mjs'
@@ -21,6 +24,15 @@ jobs:
         run: |
           node --check scripts/generate-seo.mjs
           node --check scripts/prerender.mjs
+      - name: Install Node dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build and verify dynamic sitemap routing
+        run: npm run build
+        env:
+          SUPABASE_URL: ''
+          SUPABASE_ANON_KEY: ''
+          VITE_SUPABASE_URL: ''
+          VITE_SUPABASE_ANON_KEY: ''
       - name: Test fail-safe sitemap behavior
         env:
           SUPABASE_URL: ''
