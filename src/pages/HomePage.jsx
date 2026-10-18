@@ -21,9 +21,6 @@ export default function HomePage() {
       <section className="overflow-hidden bg-gradient-to-br from-primary via-blue-600 to-secondary text-white">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-32">
           <div className="max-w-4xl">
-            <p className="mb-4 inline-flex rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-semibold backdrop-blur">
-              AI • Technology • Online Earning
-            </p>
             <h1 className="text-4xl font-black tracking-tight sm:text-5xl lg:text-7xl">AI Automation & Tech Expert</h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-blue-50">AI automation, web development and practical technology guides for businesses and readers in Urdu and English.</p>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-blue-50 sm:text-xl" dir="rtl" lang="ur">
@@ -71,7 +68,7 @@ export default function HomePage() {
             <SectionHeading
               eyebrow="Latest insights"
               title="Urdu & English Blog"
-              description="Fresh AI, technology, automation, and earning articles published separately in Urdu and English."
+              description="AI and technology articles in Urdu and English."
             />
             <Link to="/blog" className="inline-flex shrink-0 items-center gap-2 font-semibold text-primary hover:underline">
               View blog <ArrowRight className="h-4 w-4" aria-hidden="true" />
