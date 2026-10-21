@@ -28,7 +28,115 @@
       "destination": "/api/sitemap"
     },
     {
-      "source": "/(.*)",
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/blog",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/blog/urdu",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/blog/english",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/blog/:slug",
+      "destination": "/api/public-page?section=blog&slug=:slug"
+    },
+    {
+      "source": "/services",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/line",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/line/preferences",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/alerts",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/business",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/business/:slug",
+      "destination": "/api/public-page?section=business&slug=:slug"
+    },
+    {
+      "source": "/tools",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/shop",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/shop/:slug",
+      "destination": "/api/public-page?section=shop&slug=:slug"
+    },
+    {
+      "source": "/jobs",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/jobs/post",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/jobs/:slug",
+      "destination": "/api/public-page?section=jobs&slug=:slug"
+    },
+    {
+      "source": "/pricing",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin/content",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin/seo",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin/revenue",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin/monetization",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/profile",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/profile/notifications",
       "destination": "/index.html"
     }
   ],
@@ -43,7 +151,7 @@
       ]
     },
     {
-      "source": "/api/(.*)",
+      "source": "/api/((?!public-page$).*)",
       "headers": [
         {
           "key": "X-Robots-Tag",
@@ -111,6 +219,38 @@
           "value": "camera=(), microphone=(), geolocation=()"
         }
       ]
+    },
+    {
+      "source": "/line/preferences",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/jobs/post",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/app-shell.html",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
     }
-  ]
+  ],
+  "functions": {
+    "api/public-page.js": {
+      "includeFiles": "dist/app-shell.html"
+    }
+  }
 }

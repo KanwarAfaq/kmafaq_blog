@@ -10,6 +10,8 @@ const manifest=JSON.parse(await readFile(resolve(root,'public/seo-pages.json'),'
 const pages=manifest.pages.filter(p=>/^\/(?:$|[a-z0-9_%/-]+$)/i.test(p.path)&&!p.path.includes('..'));
 const all=new Set(pages.map(p=>p.path));
 const tpl=await readFile(resolve(root,'dist/index.html'),'utf8');
+// Keep a fresh app shell for public records created after this static build.
+await writeFile(resolve(root,'dist/app-shell.html'),tpl,'utf8');
 const sources={
  '/':{url:'https://developer.mozilla.org/en-US/',label:'MDN Web Docs: official web platform reference'},
  '/services':{url:'https://developer.mozilla.org/en-US/',label:'Web development reference: MDN Web Docs'},
@@ -95,11 +97,16 @@ for(const page of pages){
   '<meta property="og:type" content="'+(page.kind==='BlogPosting'?'article':'website')+'" />',
   '<meta property="og:title" content="'+escape(page.title)+'" />',
   '<meta property="og:description" content="'+escape(description)+'" />',
+  '<meta name="twitter:card" content="'+(image?'summary_large_image':'summary')+'" />',
+  '<meta name="twitter:title" content="'+escape(page.title)+'" />',
+  '<meta name="twitter:description" content="'+escape(description)+'" />',
+  image?'<meta name="twitter:image" content="'+escape(image)+'" />':'',
+  '<meta property="og:locale" content="'+(page.language==='ur'?'ur_PK':'en_US')+'" />',
   '<meta property="og:url" content="'+escape(fullUrl)+'" />',
   image?'<meta property="og:image" content="'+escape(image)+'" />':'',
   '<script type="application/ld+json">'+json+'</script>',
  ].join('');
- const html=tpl.replace(/<title>[\s\S]*?<\/title>/i,'')
+ const html=tpl.replace(/<html\b[^>]*>/i, '<html lang="'+(page.language==='ur'?'ur':'en')+'" dir="'+(page.language==='ur'?'rtl':'ltr')+'">').replace(/<title>[\s\S]*?<\/title>/i,'')
   .replace(/<meta\s+(?:name|property)="(?:description|robots|og:[^"]+|twitter:[^"]+)"[^>]*\/?>/gi,'')
   .replace(/<link\s+rel="canonical"[^>]*\/?>/gi,'')
   .replace(/<script\s+type="application\/ld\+json">[\s\S]*?<\/script>/gi,'')

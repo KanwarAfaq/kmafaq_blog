@@ -19,6 +19,8 @@ test('every SEO snapshot has indexable metadata, focus content, links and valid 
  for(const page of pages){
   const path=page.path==='/'?'index.html':page.path.slice(1)+'/index.html';
   const html=await readFile(resolve('dist',path),'utf8');
+  assert.ok(html.includes('<html lang="'+(page.language==='ur'?'ur':'en')+'"'), 'wrong document language '+page.path);
+  assert.ok(html.includes('name="twitter:card"'), 'missing share metadata '+page.path);
   assert.ok(html.includes('<h1>'),'missing H1 '+page.path);
   assert.ok(html.includes('<h2>'),'missing H2 '+page.path);
   assert.ok(html.includes('<p>'),'missing first paragraph '+page.path);

@@ -55,26 +55,40 @@ function cleanText(value = '', max = 220) {
   return String(value).replace(/\s+/g, ' ').trim().slice(0, max);
 }
 
-async function fetchTable(table, select, filters = [], limit = 1000) {
-  if (!supabaseUrl || !supabaseKey) return [];
-  const endpoint = new URL(`/rest/v1/${table}`, supabaseUrl);
-  endpoint.searchParams.set('select', select);
-  for (const [key, value] of filters) endpoint.searchParams.set(key, value);
-  endpoint.searchParams.set('order', 'created_at.desc');
-  endpoint.searchParams.set('limit', String(limit));
-
-  try {
+// A missing database must not erase all existing article snapshots during deployment.
+if (!supabaseUrl || !supabaseKey) {
+  if (process.env.VERCEL) throw new Error('Missing public database configuration for SEO build');
+  const cached = JSON.parse(await readFile(resolve(publicDir, 'seo-pages.json'), 'utf8'));
+  if (!Array.isArray(cached.pages) || !cached.pages.length) throw new Error('No existing SEO snapshots available');
+  console.log('[seo] Local build uses the existing snapshot manifest (database not configured).');
+  process.exit(0);
+}
+async function fetchTable(table, select, filters = []) {
+  const rows = [], pageSize = 1000;
+  for (let offset = 0; ; offset += pageSize) {
+    const endpoint = new URL(`/rest/v1/${table}`, supabaseUrl);
+    endpoint.searchParams.set('select', select);
+    for (const [key, value] of filters) endpoint.searchParams.set(key, value);
+    endpoint.searchParams.set('order', 'created_at.desc,slug.asc');
+    endpoint.searchParams.set('limit', String(pageSize));
+    endpoint.searchParams.set('offset', String(offset));
     const response = await fetch(endpoint, {
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-      },
+      headers: {apikey:supabaseKey, Authorization:`Bearer ${supabaseKey}`},
+      signal: AbortSignal.timeout(15000),
     });
-    if (!response.ok) throw new Error(`Supabase returned ${response.status}`);
-    return await response.json();
-  } catch (error) {
-    console.warn(`[seo] Could not fetch ${table}: ${error.message}`);
-    return [];
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      // Older posts schemas have created_at but no updated_at. Do not hide other failures.
+      if (error.code === '42703' && String(error.message).includes('updated_at') && select.split(',').includes('updated_at')) {
+        return fetchTable(table, select.split(',').filter(field => field !== 'updated_at').join(','), filters);
+      }
+      throw new Error(`SEO source ${table} returned ${response.status}; existing snapshots have not been overwritten`);
+    }
+    const page = await response.json();
+    if (!Array.isArray(page)) throw new Error(`Invalid SEO source ${table}`);
+    rows.push(...page);
+    if (rows.length > 49000) throw new Error('SEO snapshot capacity exceeded; split before publishing');
+    if (page.length < pageSize) return rows;
   }
 }
 
@@ -140,7 +154,7 @@ const uniqueUrls = Array.from(new Map(urls.map((entry) => [entry.loc, entry])).v
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${uniqueUrls.map(({ loc, lastmod }) => `  <url>\n    <loc>${escapeXml(loc)}</loc>${lastmod ? `\n    <lastmod>${new Date(lastmod).toISOString()}</lastmod>` : ''}\n  </url>`).join('\n')}
+${uniqueUrls.map(({ loc, lastmod }) => `  <url>\n    <loc>${escapeXml(loc)}</loc>${lastmod && Number.isFinite(Date.parse(lastmod)) ? `\n    <lastmod>${new Date(lastmod).toISOString()}</lastmod>` : ''}\n  </url>`).join('\n')}
 </urlset>
 `;
 

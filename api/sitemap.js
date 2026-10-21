@@ -44,12 +44,13 @@ async function fetchRows({ table, status, prefix }) {
     const endpoint = new URL(`/rest/v1/${table}`, SUPABASE_URL);
     endpoint.searchParams.set('select', 'slug,created_at');
     endpoint.searchParams.set('status', `eq.${status}`);
-    endpoint.searchParams.set('order', 'created_at.desc');
+    endpoint.searchParams.set('order', 'created_at.desc,slug.asc');
     endpoint.searchParams.set('limit', String(pageSize));
     endpoint.searchParams.set('offset', String(offset));
 
     try {
       const response = await fetch(endpoint, {
+        signal: AbortSignal.timeout(10000),
         headers: {
           apikey: SUPABASE_KEY,
           Authorization: `Bearer ${SUPABASE_KEY}`,
@@ -69,7 +70,7 @@ async function fetchRows({ table, status, prefix }) {
     .filter((row) => row?.slug)
     .map((row) => ({
       loc: `${SITE_URL}${prefix}${encodeURIComponent(row.slug)}`,
-      lastmod: row.created_at || null,
+      lastmod: row.created_at && Number.isFinite(Date.parse(row.created_at)) ? row.created_at : null,
     }));
 }
 
