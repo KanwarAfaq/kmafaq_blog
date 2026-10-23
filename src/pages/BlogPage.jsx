@@ -68,8 +68,15 @@ function TopicFilters({ language, selected, onSelect }) {
 function LanguageListing({ language }) {
   const meta = LANGUAGE_META[language];
   const [searchParams, setSearchParams] = useSearchParams();
-  const page = Math.max(1, Number(searchParams.get('page') || 1));
-  const topic = TOPIC_OPTIONS.some((item) => item.value === searchParams.get('topic')) ? searchParams.get('topic') : 'all';
+  const rawPage = searchParams.get('page');
+  const parsedPage = Number(rawPage || 1);
+  const page = Number.isInteger(parsedPage) ? Math.max(1, parsedPage) : 1;
+  const rawTopic = searchParams.get('topic');
+  const topic = TOPIC_OPTIONS.some((item) => item.value === rawTopic) ? rawTopic : 'all';
+  const hasTopicQuery = rawTopic !== null;
+  const hasUnsupportedQuery = [...searchParams.keys()].some((key) => !['page', 'topic'].includes(key))
+    || (rawPage !== null && (!/^\d+$/.test(rawPage) || parsedPage < 1))
+    || (rawTopic !== null && !TOPIC_OPTIONS.some((item) => item.value === rawTopic));
   const { posts, count, totalPages, loading, error } = useBlogListing({ page, pageSize: 9, language, category: topic });
   const isUrdu = language === 'ur';
 
@@ -89,7 +96,7 @@ function LanguageListing({ language }) {
 
   const canonicalPath = topic === 'all' ? makeHref(page) : meta.path;
   const listingTitle = page > 1 && topic === 'all' ? `${meta.label} — Page ${page}` : meta.label;
-  const listingNoIndex = topic !== 'all' || (!loading && page > totalPages);
+  const listingNoIndex = hasUnsupportedQuery || hasTopicQuery || (!loading && page > totalPages);
 
   return (
     <>
@@ -164,6 +171,7 @@ function LatestFeed({ language }) {
 }
 
 export default function BlogPage({ language = null }) {
+  const [searchParams] = useSearchParams();
   if (language) return <LanguageListing language={language} />;
 
   return (
@@ -172,6 +180,7 @@ export default function BlogPage({ language = null }) {
         title="Blog"
         path="/blog"
         description="KM Afaq publishes current Urdu and English articles covering technology, business, politics, sports, world affairs, science and practical digital skills."
+        noIndex={searchParams.toString().length > 0}
       />
 
       <section className="relative overflow-hidden bg-ink py-16 text-white sm:py-20">
