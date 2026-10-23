@@ -1,5 +1,7 @@
 name: Sitemap safety
 on:
+  push:
+    branches: [main]
   pull_request:
     paths:
       - 'api/sitemap.js'
@@ -11,6 +13,12 @@ on:
       - 'tests/seo-pages.test.mjs'
       - 'tests/sitemap.test.mjs'
       - '.github/workflows/sitemap-safety.yml'
+      - 'server/**'
+      - 'src/**'
+      - 'tests/**'
+      - 'scripts/verify-build.mjs'
+      - 'index.html'
+      - 'package-lock.json'
   workflow_dispatch:
 jobs:
   test:
@@ -27,7 +35,7 @@ jobs:
       - name: Install Node dependencies
         run: npm ci --no-audit --no-fund
       - name: Build and verify dynamic sitemap routing
-        run: npm run build
+        run: npm run test:build
         env:
           SUPABASE_URL: ''
           SUPABASE_ANON_KEY: ''

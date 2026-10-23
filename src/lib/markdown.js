@@ -6,7 +6,7 @@
 export function normalizeArticleMarkdown(value = '') {
   return String(value)
     .replace(/\r\n/g, '\n')
-    .replace(/\|\s+\|/g, '|\n|')
+    .split('\n').map(line => /\|\s+\|\s*:?-{3,}/.test(line) ? line.replace(/\|\s+\|/g, '|\n|') : line).join('\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 }

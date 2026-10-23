@@ -1,4 +1,4 @@
-export default function SectionHeading({ eyebrow, title, description, align = 'left' }) {
+export default function SectionHeading({ eyebrow, title, description, align = 'left', as: Heading = 'h2' }) {
   const alignment = align === 'center' ? 'text-center mx-auto' : '';
 
   return (
@@ -6,7 +6,7 @@ export default function SectionHeading({ eyebrow, title, description, align = 'l
       {eyebrow && (
         <p className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-primary">{eyebrow}</p>
       )}
-      <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">{title}</h2>
+      <Heading className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">{title}</Heading>
       {description && <p className="mt-4 text-base leading-7 text-gray-600 sm:text-lg">{description}</p>}
     </div>
   );

@@ -104,8 +104,8 @@ function LanguageListing({ language }) {
               <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> KM Afaq
             </span>
             <h1 className="mt-5 text-3xl font-black tracking-tight text-ink sm:text-5xl">{meta.title}</h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-gray-600 sm:text-lg">{meta.title} — {meta.description}</p>
-            <h2 className="mt-6 text-xl font-black text-ink">{meta.title}</h2>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-gray-600 sm:text-lg">{meta.description}</p>
+
             <div className="mt-7"><LanguageNav current={language} /></div>
           </div>
         </div>

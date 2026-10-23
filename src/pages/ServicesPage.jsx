@@ -16,7 +16,7 @@ export default function ServicesPage() {
       />
       <section className="py-14 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeading
+          <SectionHeading as="h1"
             eyebrow="Professional services"
             title="Technology services built around outcomes"
             description="Choose a focused service or contact KM Afaq for a custom scope tailored to your workflow, product, or business."

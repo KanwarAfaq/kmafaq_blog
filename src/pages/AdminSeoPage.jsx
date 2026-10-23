@@ -36,8 +36,7 @@ export default function AdminSeoPage() {
     }
   }
 
-  useEffect(() => { if (admin) load(); }, [admin]); // eslint-disable-line react-hooks/exhaustive-deps
-  if (!admin) return <Navigate to="/" replace />;
+  useEffect(() => { if (admin) load(); }, [admin]);
 
   const audit = useMemo(() => {
     const published = posts.filter((p) => p.status === 'published');
@@ -50,6 +49,8 @@ export default function AdminSeoPage() {
       healthy: published.filter((p) => String(p.cover_image_url || '').trim() && String(p.seo_description || '').trim().length >= 100 && String(p.excerpt || '').trim().length >= 80 && String(p.content || '').trim().length >= 500),
     };
   }, [posts]);
+
+  if (!admin) return <Navigate to="/" replace />;
 
   const problemMap = new Map();
   [

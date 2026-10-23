@@ -1,6 +1,6 @@
 import { Bot, Code2, Lightbulb } from 'lucide-react';
 import SEO from '../components/SEO';
-import SectionHeading from '../components/SectionHeading';
+
 
 export default function AboutPage() {
   return (
@@ -20,7 +20,7 @@ export default function AboutPage() {
             className="aspect-square w-full rounded-3xl bg-white object-cover shadow-sm"
           />
           <div>
-            <SectionHeading eyebrow="About KM Afaq" title="Making modern technology useful, not complicated" />
+            <p className="text-sm font-bold uppercase tracking-widest text-primary">About KM Afaq</p><h1 className="mt-3 text-3xl font-black tracking-tight text-ink sm:text-4xl">Making modern technology useful, not complicated</h1>
             <div className="mt-6 space-y-5 text-base leading-8 text-gray-600">
               <p>
                 KM Afaq is a technology-focused platform covering AI automation, modern web development, practical digital skills, and online earning opportunities.

@@ -27,7 +27,7 @@ export default function ContactPage() {
       <section className="py-14 sm:py-20">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
           <div>
-            <SectionHeading
+            <SectionHeading as="h1"
               eyebrow="Contact"
               title="Tell me what you want to build or automate"
               description="Send a concise overview of your goal, existing tools, and expected outcome."

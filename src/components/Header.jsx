@@ -1,5 +1,6 @@
 import { LogIn, LogOut, Menu, ShieldCheck, UserRound, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import NotificationMenu from './NotificationMenu';
@@ -35,12 +36,41 @@ function NavItem({ label, to, onClick }) {
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const menuTrigger = useRef(null);
+  const menuDialog = useRef(null);
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const admin = user?.app_metadata?.role === 'admin';
 
   useEffect(() => setMobileOpen(false), [location.pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const dialog = menuDialog.current;
+    const trigger = menuTrigger.current;
+    dialog?.querySelector('button, a')?.focus();
+    const onKey = event => {
+      if (event.key === 'Escape') setMobileOpen(false);
+      if (event.key !== 'Tab') return;
+      const items = [...(dialog?.querySelectorAll('a[href], button:not([disabled])') || [])];
+      const first = items[0], last = items.at(-1);
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    };
+    document.addEventListener('keydown', onKey);
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const onDesktop = event => { if (event.matches) setMobileOpen(false); };
+    desktop.addEventListener('change', onDesktop);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', onKey);
+      desktop.removeEventListener('change', onDesktop);
+      trigger?.focus();
+    };
+  }, [mobileOpen]);
 
   async function signOut() {
     if (!supabase) return;
@@ -86,16 +116,16 @@ export default function Header() {
               <LogIn className="h-4 w-4" aria-hidden="true" /> Sign in
             </button>
           )}
-          <button type="button" onClick={() => setMobileOpen(true)} className="rounded-xl p-2 text-gray-700 transition hover:bg-gray-100 lg:hidden" aria-label="Open menu">
+          <button type="button" ref={menuTrigger} aria-expanded={mobileOpen} aria-controls="mobile-navigation-dialog" onClick={() => setMobileOpen(true)} className="rounded-xl p-2 text-gray-700 transition hover:bg-gray-100 lg:hidden" aria-label="Open menu">
             <Menu className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
       </div>
 
-      {mobileOpen && (
+      {mobileOpen && createPortal(
         <div className="fixed inset-0 z-50 lg:hidden">
           <button type="button" className="absolute inset-0 bg-gray-950/45" onClick={() => setMobileOpen(false)} aria-label="Close menu overlay" />
-          <aside className="absolute right-0 top-0 flex h-full w-[min(20rem,85vw)] flex-col bg-white p-5 shadow-2xl">
+          <aside ref={menuDialog} id="mobile-navigation-dialog" role="dialog" aria-modal="true" aria-label="Navigation menu" className="absolute right-0 top-0 flex h-full w-[min(20rem,85vw)] flex-col overflow-y-auto bg-white p-5 shadow-2xl">
             <div className="flex items-center justify-between">
               <span className="text-lg font-extrabold text-ink">KM Afaq</span>
               <button type="button" onClick={() => setMobileOpen(false)} className="rounded-xl p-2 text-gray-700 hover:bg-gray-100" aria-label="Close menu"><X className="h-6 w-6" /></button>
@@ -116,7 +146,7 @@ export default function Header() {
               )}
             </div>
           </aside>
-        </div>
+        </div>, document.body
       )}
     </header>
   );

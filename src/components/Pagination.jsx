@@ -14,6 +14,8 @@ export default function Pagination({ page, totalPages, makeHref, isUrdu = false 
     <nav className="mt-12 flex flex-wrap items-center justify-center gap-2" aria-label="Blog pagination">
       <Link
         to={makeHref(Math.max(1, page - 1))}
+        aria-label={isUrdu ? 'پچھلا صفحہ' : 'Previous page'}
+        tabIndex={page === 1 ? -1 : undefined}
         aria-disabled={page === 1}
         className={`inline-flex h-11 items-center gap-2 rounded-xl border px-4 text-sm font-bold transition ${page === 1 ? 'pointer-events-none border-gray-200 text-gray-300' : 'border-gray-200 bg-white text-ink hover:border-primary hover:text-primary'}`}
       >
@@ -39,6 +41,8 @@ export default function Pagination({ page, totalPages, makeHref, isUrdu = false 
 
       <Link
         to={makeHref(Math.min(totalPages, page + 1))}
+        aria-label={isUrdu ? 'اگلا صفحہ' : 'Next page'}
+        tabIndex={page === totalPages ? -1 : undefined}
         aria-disabled={page === totalPages}
         className={`inline-flex h-11 items-center gap-2 rounded-xl border px-4 text-sm font-bold transition ${page === totalPages ? 'pointer-events-none border-gray-200 text-gray-300' : 'border-gray-200 bg-white text-ink hover:border-primary hover:text-primary'}`}
       >

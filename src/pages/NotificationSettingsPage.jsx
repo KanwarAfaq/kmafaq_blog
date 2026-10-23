@@ -1,4 +1,4 @@
-import { BellRing, CalendarDays, CheckCircle2, Clock3, Mail, MessageCircle, Save, ShieldCheck } from 'lucide-react';
+import { BellRing, CalendarDays, Clock3, Mail, MessageCircle, Save, ShieldCheck } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';

@@ -45,14 +45,15 @@ export default function AdminContentPage() {
     finally { setLoading(false); }
   }
 
-  useEffect(() => { if (admin) load(); }, [admin]); // eslint-disable-line react-hooks/exhaustive-deps
-  if (!admin) return <Navigate to="/" replace />;
+  useEffect(() => { if (admin) load(); }, [admin]);
 
   const filtered = useMemo(() => posts.filter((post) => {
     const matchesText = !query || `${post.title} ${post.slug}`.toLowerCase().includes(query.toLowerCase());
     const matchesStatus = statusFilter === 'all' || post.status === statusFilter;
     return matchesText && matchesStatus;
   }), [posts, query, statusFilter]);
+
+  if (!admin) return <Navigate to="/" replace />;
 
   function update(key, value) {
     setForm((current) => ({ ...current, [key]: value }));

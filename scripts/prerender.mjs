@@ -1,3 +1,4 @@
+import { renderArticleHtml } from '../server/article-html.js';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 const root=process.cwd(),site='https://kmafaq.online';
@@ -58,28 +59,17 @@ for(const page of pages){
  const links=related(page);
  // Search crawlers must receive the actual public article, not just its excerpt.
  // Remove markup/scripts and escape the resulting text to prevent HTML injection.
- const paragraphs=String(page.content||'')
-  .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,' ')
-  .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,' ')
-  .replace(/<\/(?:p|div|li|h[1-6])\s*>/gi,'\n\n')
-  .replace(/<br\s*\/?>/gi,'\n\n')
-  .replace(/<[^>]*>/g,' ')
-  .replace(/^\s{0,3}#{1,6}\s+/gm,'')
-  .slice(0,40000)
-  .split(/\n\s*\n/)
-  .map(part=>part.replace(/\s+/g,' ').trim())
-  .filter(Boolean)
-  .slice(0,80);
- const articleContent=page.kind==='BlogPosting'&&paragraphs.length
-  ?'<section data-seo-article-body="true"><h2>Article</h2>'+paragraphs.map(part=>'<p>'+escape(part)+'</p>').join('')+'</section>'
+ const articleContent=page.kind==='BlogPosting'&&String(page.content||'').trim()
+  ?'<section class="article-prose" data-seo-article-body="true">'+renderArticleHtml(page.content)+'</section>'
   :'';
  const resource=source||sources[page.path]?.url,resourceLabel=source?'Original source or publisher':sources[page.path]?.label;
  const body=[
   '<main data-seo-prerender="true" style="max-width:68rem;margin:0 auto;padding:2.5rem 1rem;font-family:system-ui,sans-serif">',
   '<article lang="'+escape(page.language||'en')+'" '+(page.language==='ur'?'dir="rtl"':'')+'>',
   '<h1>'+escape(focus)+'</h1>',
+  page.kind==='BlogPosting'?'<p><a href="/about" rel="author">KM Afaq</a>'+(safeDate(page.date)?' · <time datetime="'+safeDate(page.date)+'">'+escape(safeDate(page.date).slice(0,10))+'</time>':'')+'</p>':'',
   '<p>'+escape(lead)+'</p>',
-  image?'<figure><img loading="lazy" src="'+escape(image)+'" alt="'+escape(focus+' illustration or cover')+'" style="max-width:min(100%,48rem);height:auto" /></figure>':'',
+  image?'<figure><img loading="eager" fetchpriority="high" decoding="async" src="'+escape(image)+'" alt="'+escape(focus+' illustration or cover')+'" style="max-width:min(100%,48rem);height:auto" /></figure>':'',
   '<h2>'+escape((page.language==='ur'?'مزید تفصیل: ':'About ')+focus)+'</h2>',
   articleContent||'<p>'+escape(description)+'</p>',
   publicArticleLinks(page),
@@ -106,11 +96,13 @@ for(const page of pages){
   image?'<meta property="og:image" content="'+escape(image)+'" />':'',
   '<script type="application/ld+json">'+json+'</script>',
  ].join('');
+ // Helmet must adopt server metadata rather than append a second canonical.
+ const managedHead=head.replace(/<(meta|link|script)\b/g,'<$1 data-rh="true"');
  const html=tpl.replace(/<html\b[^>]*>/i, '<html lang="'+(page.language==='ur'?'ur':'en')+'" dir="'+(page.language==='ur'?'rtl':'ltr')+'">').replace(/<title>[\s\S]*?<\/title>/i,'')
-  .replace(/<meta\s+(?:name|property)="(?:description|robots|og:[^"]+|twitter:[^"]+)"[^>]*\/?>/gi,'')
-  .replace(/<link\s+rel="canonical"[^>]*\/?>/gi,'')
-  .replace(/<script\s+type="application\/ld\+json">[\s\S]*?<\/script>/gi,'')
-  .replace('</head>',head+'</head>')
+  .replace(/<meta\b(?=[^>]*\b(?:name|property)="(?:description|robots|googlebot|og:[^"]+|twitter:[^"]+)")[^>]*\/?>/gi,'')
+  .replace(/<link\b(?=[^>]*\brel="canonical")[^>]*\/?>/gi,'')
+  .replace(/<script\b(?=[^>]*\btype="application\/ld\+json")[^>]*>[\s\S]*?<\/script>/gi,'')
+  .replace('</head>',managedHead+'</head>')
   .replace('<div id="root"></div>','<div id="root">'+body+'</div>');
  const path=page.path==='/'?'index.html':page.path.slice(1)+'/index.html';
  const destination=resolve(root,'dist',path);

@@ -1,4 +1,4 @@
-import { BadgeDollarSign, BriefcaseBusiness, Building2, Link2, Megaphone, MessageCircle, Package, ShieldAlert, Users } from 'lucide-react';
+import { BadgeDollarSign, BriefcaseBusiness, Link2, Megaphone, MessageCircle, Package, ShieldAlert, Users } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, Navigate } from 'react-router-dom';
@@ -44,7 +44,7 @@ export default function AdminRevenuePage() {
   useEffect(() => {
     if (admin) load();
     else setLoading(false);
-  }, [admin]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [admin]);
 
   const won = useMemo(() => data.sales.filter((item) => item.status === 'won').length, [data.sales]);
   if (!admin) return <Navigate to="/" replace />;

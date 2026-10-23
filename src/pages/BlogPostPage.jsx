@@ -10,30 +10,12 @@ import Loader from '../components/Loader';
 import SEO from '../components/SEO';
 import { getAdjacentPosts, getPostBySlug, getRelatedPosts } from '../lib/api';
 import { normalizeArticleMarkdown } from '../lib/markdown';
+import { extractHeadings, headingId } from '../lib/article';
 import { topicLabel } from '../lib/topics';
 
 function estimateReadMinutes(content = '') {
   const words = String(content).trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.ceil(words / 220));
-}
-
-function headingId(value = '') {
-  return String(value)
-    .replace(/[*_`~()[\]]/g, '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}]+/gu, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 80);
-}
-
-function extractHeadings(markdown = '') {
-  return Array.from(String(markdown).matchAll(/^(#{2,3})\s+(.+)$/gm))
-    .map((match) => {
-      const text = match[2].replace(/\[(.*?)\]\([^)]*\)/g, '$1').replace(/[*_`~]/g, '').trim();
-      return { level: match[1].length, text, id: headingId(text) };
-    })
-    .filter((item) => item.text && item.id);
 }
 
 function headingText(children) {
@@ -157,6 +139,8 @@ export default function BlogPostPage() {
   const language = isUrdu ? 'ur' : 'en';
   const blogPath = isUrdu ? '/blog/urdu' : '/blog/english';
   const readMinutes = estimateReadMinutes(post.content);
+  let headingCursor = 0;
+  const nextHeadingId = children => headings[headingCursor++]?.id || headingId(headingText(children));
   const bottomRelated = related.slice(4, 7).length ? related.slice(4, 7) : related.slice(0, 3);
 
   const blogPostingSchema = {
@@ -222,9 +206,10 @@ export default function BlogPostPage() {
             <header className="mt-7 text-start">
               <div className="flex flex-wrap items-center gap-2"><span className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-black text-primary"><Tag className="h-3.5 w-3.5" aria-hidden="true" /> {topicLabel(post.topic_category, language)}</span>{post.is_sponsored ? <span className="rounded-full bg-amber-100 px-3 py-1.5 text-xs font-black text-amber-800">Sponsored{post.sponsor_name ? ` by ${post.sponsor_name}` : ''}</span> : null}</div>
               <h1 className="mt-4 text-3xl font-black leading-tight tracking-tight text-ink sm:text-5xl lg:text-[3.4rem]">{post.title}</h1>
-              <p className="mt-5 text-lg leading-8 text-gray-600 sm:text-xl">{post.title} — {post.excerpt || (isUrdu ? 'اس مضمون میں اہم معلومات اور پس منظر پڑھیں۔' : 'Read the key facts and context in this article.')}</p>
+              <p className="mt-5 text-lg leading-8 text-gray-600 sm:text-xl">{post.excerpt || (isUrdu ? 'اس مضمون میں اہم معلومات اور پس منظر پڑھیں۔' : 'Read the key facts and context in this article.')}</p>
 
               <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm font-semibold text-gray-500">
+                <Link to="/about" rel="author" className="font-bold text-primary hover:underline">{isUrdu ? 'تحریر: KM Afaq' : 'By KM Afaq'}</Link>
                 <span className="inline-flex items-center gap-2">
                   <CalendarDays className="h-4 w-4" aria-hidden="true" />
                   <time dateTime={post.created_at}>{new Intl.DateTimeFormat(isUrdu ? 'ur-PK' : 'en', { dateStyle: 'long' }).format(new Date(post.created_at))}</time>
@@ -242,7 +227,7 @@ export default function BlogPostPage() {
                 Your browser does not support embedded video.
               </video>
             ) : post.cover_image_url ? (
-              <img src={post.cover_image_url} alt={post.title} loading="eager" decoding="async" className="mt-8 aspect-[16/9] w-full rounded-[2rem] object-cover shadow-[0_22px_60px_rgba(15,23,42,.15)]" />
+              <img src={post.cover_image_url} alt={post.title} loading="eager" fetchPriority="high" decoding="async" width="1280" height="720" className="mt-8 aspect-[16/9] w-full rounded-[2rem] object-cover shadow-[0_22px_60px_rgba(15,23,42,.15)]" />
             ) : null}
 
             {post.cover_image_source_url && post.cover_image_attribution ? (
@@ -255,14 +240,14 @@ export default function BlogPostPage() {
 
           <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
             <div className="min-w-0 rounded-[2rem] border border-gray-200 bg-white px-5 py-7 shadow-[0_10px_35px_rgba(15,23,42,.04)] sm:px-8 sm:py-10 lg:px-10">
-              <h2 className="mb-5 text-2xl font-black leading-8 text-ink">{isUrdu ? 'تفصیلات: ' : 'About '}{post.title}</h2>
+              <h2 className="mb-5 text-2xl font-black leading-8 text-ink">{isUrdu ? 'مکمل مضمون' : 'Full article'}</h2>
               <div className="article-prose text-base leading-8 text-gray-700 sm:text-[1.08rem] sm:leading-9">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={{
-                    h1: ({ node: _node, children, ...props }) => <h2 id={headingId(headingText(children))} {...props}>{children}</h2>,
-                    h2: ({ node: _node, children, ...props }) => <h2 id={headingId(headingText(children))} {...props}>{children}</h2>,
-                    h3: ({ node: _node, children, ...props }) => <h3 id={headingId(headingText(children))} {...props}>{children}</h3>,
+                    h1: ({ node: _node, children, ...props }) => <h2 id={nextHeadingId(children)} {...props}>{children}</h2>,
+                    h2: ({ node: _node, children, ...props }) => <h2 id={nextHeadingId(children)} {...props}>{children}</h2>,
+                    h3: ({ node: _node, children, ...props }) => <h3 id={nextHeadingId(children)} {...props}>{children}</h3>,
                     a: ({ node: _node, href, ...props }) => {
                       const external = /^https?:\/\//i.test(href || '');
                       return <a href={href} {...(external ? { target: '_blank', rel: 'noreferrer' } : {})} {...props} />;

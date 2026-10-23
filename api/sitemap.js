@@ -39,10 +39,11 @@ async function fetchRows({ table, status, prefix }) {
 
   const pageSize = 1000;
   const rows = [];
+  let select = 'slug,created_at,updated_at';
 
   for (let offset = 0; offset < 50000; offset += pageSize) {
     const endpoint = new URL(`/rest/v1/${table}`, SUPABASE_URL);
-    endpoint.searchParams.set('select', 'slug,created_at');
+    endpoint.searchParams.set('select', select);
     endpoint.searchParams.set('status', `eq.${status}`);
     endpoint.searchParams.set('order', 'created_at.desc,slug.asc');
     endpoint.searchParams.set('limit', String(pageSize));
@@ -56,11 +57,21 @@ async function fetchRows({ table, status, prefix }) {
           Authorization: `Bearer ${SUPABASE_KEY}`,
         },
       });
-      if (!response.ok) throw new Error(`${table}: ${response.status}`);
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        if (error.code === '42703' && String(error.message).includes('updated_at') && select.includes('updated_at')) {
+          select = 'slug,created_at';
+          offset -= pageSize;
+          continue;
+        }
+        throw new Error(`${table}: ${response.status}`);
+      }
 
       const page = await response.json();
-      rows.push(...(page || []));
-      if (!Array.isArray(page) || page.length < pageSize) break;
+      if (!Array.isArray(page)) throw new Error('Invalid sitemap source response');
+      rows.push(...page);
+      if (rows.length > 49000) throw new Error('Sitemap source capacity exceeded');
+      if (page.length < pageSize) break;
     } catch (error) {
       throw new Error(`Sitemap source unavailable: ${error.message}`);
     }
@@ -70,7 +81,7 @@ async function fetchRows({ table, status, prefix }) {
     .filter((row) => row?.slug)
     .map((row) => ({
       loc: `${SITE_URL}${prefix}${encodeURIComponent(row.slug)}`,
-      lastmod: row.created_at && Number.isFinite(Date.parse(row.created_at)) ? row.created_at : null,
+      lastmod: [row.updated_at, row.created_at].find(value => value && Number.isFinite(Date.parse(value))) || null,
     }));
 }
 
@@ -99,6 +110,12 @@ export default async function handler(req, res) {
   ];
 
   const unique = Array.from(new Map(urls.map((entry) => [entry.loc, entry])).values());
+  if (unique.length > 50000) {
+    res.statusCode = 503;
+    res.setHeader('Cache-Control', 'no-store');
+    res.end('Sitemap requires splitting before publication');
+    return;
+  }
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${unique.map(({ loc, lastmod }) => `  <url>

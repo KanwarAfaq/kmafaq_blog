@@ -28,7 +28,7 @@ test('every SEO snapshot has indexable metadata, focus content, links and valid 
   if(page.kind==='BlogPosting'&&String(page.content||'').trim())assert.ok(html.includes('data-seo-article-body="true"'),'full public article missing from initial HTML '+page.path);
   assert.ok(/<a href="\//.test(html),'missing internal link '+page.path);
   if(page.image&&/^https?:\/\//.test(page.image))assert.ok(html.includes('alt="'),'image has no alt '+page.path);
-  const scripts=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
+  const scripts=[...html.matchAll(/<script(?: data-rh="true")? type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
   assert.ok(scripts.length,'missing schema '+page.path);
   scripts.forEach(m=>assert.equal(JSON.parse(m[1])['@context'],'https://schema.org','invalid schema '+page.path));
  }

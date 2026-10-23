@@ -53,7 +53,7 @@ export default function AdminDashboardPage() {
     }
   }
 
-  useEffect(() => { if (admin) load(); }, [admin]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (admin) load(); }, [admin]);
   if (!admin) return <Navigate to="/" replace />;
 
   const metrics = health?.metrics || {};

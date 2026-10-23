@@ -12,8 +12,9 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-ink">
+      <a href="#main-content" className="skip-link">Skip to content</a>
       <Header />
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <Outlet />
       </main>
       <Footer />
