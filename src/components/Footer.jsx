@@ -27,6 +27,8 @@ export default function Footer() {
             <Link className="hover:text-primary" to="/business">Business Directory</Link>
             <Link className="hover:text-primary" to="/tools">AI Tools</Link>
             <Link className="hover:text-primary" to="/pricing">Pricing & Advertise</Link>
+            <a className="hover:text-primary" href="https://anytool.online" rel="noopener">Free Online Utilities</a>
+            <a className="hover:text-primary" href="/rss.xml">RSS Feed</a>
           </nav>
         </div>
 

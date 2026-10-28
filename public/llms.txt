@@ -1,25 +1,31 @@
 # KM Afaq
 
-> Practical AI automation, technology, online earning insights, jobs, tools, business resources, and digital services in Urdu and English.
+> KM Afaq is a bilingual (English and Urdu) site with practical AI automation, web development and technology guides, plus jobs, a business directory, AI tool listings, digital products and services.
 
-Canonical site: https://kmafaq.online
-Primary languages: English (en), Urdu (ur)
+Canonical site: https://kmafaq.online. Primary languages: English (en) and Urdu (ur). Articles are written by KM Afaq.
 
-## Main sections
+## Content
 
-- [Home](https://kmafaq.online/)
-- [Blog](https://kmafaq.online/blog)
-- [Urdu Blog](https://kmafaq.online/blog/urdu)
-- [English Blog](https://kmafaq.online/blog/english)
-- [Services](https://kmafaq.online/services)
-- [Jobs](https://kmafaq.online/jobs)
-- [Business Directory](https://kmafaq.online/business)
-- [AI Tools](https://kmafaq.online/tools)
-- [Digital Store](https://kmafaq.online/shop)
-- [About](https://kmafaq.online/about)
-- [Contact](https://kmafaq.online/contact)
+- [Blog](https://kmafaq.online/blog): All published articles on AI, technology and online earning, in English and Urdu.
+- [English Blog](https://kmafaq.online/blog/english): English-language articles and tutorials.
+- [Urdu Blog](https://kmafaq.online/blog/urdu): Urdu-language articles and tutorials.
+- [RSS feed](https://kmafaq.online/rss.xml): Latest articles in RSS 2.0 format.
 
-## Crawling
+## Services and resources
 
-- XML sitemap: https://kmafaq.online/sitemap.xml
-- Robots policy: https://kmafaq.online/robots.txt
+- [Services](https://kmafaq.online/services): AI automation, web development and tech consulting services.
+- [AI Tools](https://kmafaq.online/tools): Directory of AI tools.
+- [Jobs](https://kmafaq.online/jobs): Job and freelance listings.
+- [Business Directory](https://kmafaq.online/business): Business listings.
+- [Digital Store](https://kmafaq.online/shop): Digital products.
+- [Pricing](https://kmafaq.online/pricing): Pricing and advertising options.
+
+## About
+
+- [About](https://kmafaq.online/about): Who writes KM Afaq and what it covers.
+- [Contact](https://kmafaq.online/contact): How to get in touch.
+
+## Optional
+
+- [XML sitemap](https://kmafaq.online/sitemap.xml): Every public URL.
+- [Free online utilities (AnyTool)](https://anytool.online): Sister site with free browser-based tools such as PDF, image and text utilities.

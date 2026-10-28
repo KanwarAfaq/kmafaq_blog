@@ -1,4 +1,54 @@
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /admin
+Disallow: /login
+Disallow: /profile
+
+# AI search and answer-engine crawlers are welcome on public content.
+User-agent: GPTBot
+Allow: /
+Disallow: /api/
+Disallow: /admin
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /api/
+Disallow: /admin
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /api/
+Disallow: /admin
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /api/
+Disallow: /admin
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /api/
+Disallow: /admin
+
+User-agent: Claude-User
+Allow: /
+Disallow: /api/
+Disallow: /admin
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /api/
+Disallow: /admin
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /api/
+Disallow: /admin
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /api/
+Disallow: /admin
+
 Sitemap: https://kmafaq.online/sitemap.xml
