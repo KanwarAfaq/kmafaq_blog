@@ -1,4 +1,5 @@
 import { renderArticleHtml } from '../server/article-html.js';
+import { PAGE_FAQS, faqSchema } from '../src/constants/faqs.js';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 const root=process.cwd(),site='https://kmafaq.online';
@@ -42,6 +43,8 @@ const publicArticleLinks=page=>{
  }).filter(Boolean);
  return sections.length?'<nav aria-label="Browse published articles" data-seo-blog-hub="true">'+sections.join('')+'</nav>':'';
 };
+const faqHtml=path=>{const f=PAGE_FAQS[path];if(!f)return '';
+ return '<section><h2>'+escape(f.heading)+'</h2><dl>'+f.items.map(i=>'<dt>'+escape(i.q)+'</dt><dd>'+escape(i.a)+'</dd>').join('')+'</dl><nav aria-label="Related pages"><ul>'+f.links.map(l=>'<li><a href="'+escape(l.to)+'">'+escape(l.text)+'</a></li>').join('')+'</ul></nav></section>'};
 const safeDate=value=>value&&!Number.isNaN(Date.parse(value))?new Date(value).toISOString():undefined;
 for(const page of pages){
  const fullUrl=site+page.path,description=clean(page.description||page.title);
@@ -73,6 +76,7 @@ for(const page of pages){
   '<h2>'+escape((page.language==='ur'?'مزید تفصیل: ':'About ')+focus)+'</h2>',
   articleContent||'<p>'+escape(description)+'</p>',
   publicArticleLinks(page),
+  faqHtml(page.path),
   links.length?'<nav aria-label="Related pages"><h2>Related articles and resources</h2><ul>'+
    links.map(l=>'<li><a href="'+escape(l.path)+'">'+escape(l.text)+'</a></li>').join('')+'</ul></nav>':'',
   resource?'<p><a href="'+escape(resource)+'" rel="noopener noreferrer">'+escape(resourceLabel)+'</a> — consult this source for current information.</p>':'',
@@ -95,6 +99,7 @@ for(const page of pages){
   '<meta property="og:url" content="'+escape(fullUrl)+'" />',
   image?'<meta property="og:image" content="'+escape(image)+'" />':'',
   '<script type="application/ld+json">'+json+'</script>',
+  faqSchema(page.path)?'<script type="application/ld+json">'+JSON.stringify(faqSchema(page.path)).replace(/</g,'\\u003c')+'</script>':'',
  ].join('');
  // Helmet must adopt server metadata rather than append a second canonical.
  const managedHead=head.replace(/<(meta|link|script)\b/g,'<$1 data-rh="true"');

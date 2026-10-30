@@ -1,7 +1,9 @@
 import { ArrowUpRight, BriefcaseBusiness, MapPin, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import FaqSection from '../components/FaqSection';
 import SEO from '../components/SEO';
+import { faqSchema } from '../constants/faqs';
 import { getJobListings } from '../lib/api';
 
 export default function JobsPage() {
@@ -18,12 +20,12 @@ export default function JobsPage() {
 
   return (
     <main className="py-14">
-      <SEO title="AI, Tech & Freelance Jobs" path="/jobs" description="Browse AI, technology, remote, internship and freelance opportunities on KM Afaq." />
+      <SEO title="AI, Tech, Remote & Freelance Jobs" path="/jobs" description="Browse AI jobs, technology roles, remote work, internships and freelance opportunities on KM Afaq. Search by title, company or location." schema={[faqSchema('/jobs')]} />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
           <div>
             <p className="text-sm font-black text-emerald-600">JOBS & FREELANCE</p>
-            <h1 className="mt-2 text-4xl font-black text-ink sm:text-5xl">Opportunities for modern digital work</h1>
+            <h1 className="mt-2 text-4xl font-black text-ink sm:text-5xl">AI, tech, remote and freelance jobs</h1>
             <p className="mt-3 max-w-2xl text-gray-600">AI, technology, remote jobs, internships and freelance opportunities.</p>
           </div>
           <Link to="/jobs/post" className="rounded-xl bg-primary px-5 py-3 text-center font-black text-white">Post a job</Link>
@@ -67,6 +69,7 @@ export default function JobsPage() {
           ))}
           {!filtered.length ? <div className="rounded-3xl border border-dashed border-gray-300 p-12 text-center text-gray-500"><BriefcaseBusiness className="mx-auto h-8 w-8 text-gray-300" /><p className="mt-3 font-black text-ink">No matching jobs yet.</p><Link to="/jobs/post" className="mt-2 inline-block text-sm font-black text-primary">Post the first opportunity</Link></div> : null}
         </div>
+        <FaqSection path="/jobs" />
       </div>
     </main>
   );

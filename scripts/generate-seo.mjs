@@ -109,10 +109,10 @@ const publicStatic = [
   {path:'/about',title:'About KM Afaq — AI Automation and Technology',description:'Learn about KM Afaq and his practical AI automation and web development projects.'},
   {path:'/contact',title:'Contact KM Afaq',description:'Contact KM Afaq about AI automation, web development or technology services.'},
   {path:'/line',title:'LINE News and Technology Alerts',description:'Get KM Afaq news and technology updates through LINE.'},
-  {path:'/business',title:'Business and Service Provider Directory',description:'Explore business and service-provider listings on KM Afaq.'},
-  {path:'/tools',title:'AI and Software Tools Directory',description:'Discover AI tools, software utilities and technology services.'},
+  {path:'/business',title:'Business Directory: Service Providers & Business Listings',description:'Browse a business directory of service providers and business listings on KM Afaq by category and city, and request a quote directly.'},
+  {path:'/tools',title:'AI Tools Directory: Curated AI & Software Tools',description:'A curated AI tools directory: AI and software tools selected by KM Afaq for practical workflows and productivity. Some links may be affiliate links.'},
   {path:'/shop',title:'Digital Products and Technology Resources',description:'Explore digital products, templates and practical downloadable resources.'},
-  {path:'/jobs',title:'Technology Jobs and Freelance Opportunities',description:'Browse technology roles, remote jobs and freelance opportunities.'},
+  {path:'/jobs',title:'AI, Tech, Remote & Freelance Jobs',description:'Browse AI jobs, technology roles, remote work, internships and freelance opportunities on KM Afaq. Search by title, company or location.'},
   {path:'/pricing',title:'KM Afaq Services, Plans and Pricing',description:'Compare KM Afaq service offerings and business promotion options.'},
 ];
 const snapshotPages = [
