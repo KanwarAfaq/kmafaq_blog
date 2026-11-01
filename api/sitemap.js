@@ -1,3 +1,4 @@
+import rssHandler from '../server/rss.js';
 const SITE_URL = (process.env.SITE_URL || 'https://kmafaq.online').replace(/\/$/, '');
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
 const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
@@ -86,6 +87,8 @@ async function fetchRows({ table, status, prefix }) {
 }
 
 export default async function handler(req, res) {
+  // RSS shares this function to stay under the Hobby plan's 12-function limit.
+  if ((req.url || '').includes('feed=rss')) return rssHandler(req, res);
   if (!['GET', 'HEAD'].includes(req.method || 'GET')) {
     res.statusCode = 405;
     res.setHeader('Allow', 'GET, HEAD');

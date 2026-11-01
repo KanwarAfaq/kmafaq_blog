@@ -29,11 +29,11 @@
     },
     {
       "source": "/rss.xml",
-      "destination": "/api/rss"
+      "destination": "/api/sitemap?feed=rss"
     },
     {
       "source": "/feed.xml",
-      "destination": "/api/rss"
+      "destination": "/api/sitemap?feed=rss"
     },
     {
       "source": "/",
