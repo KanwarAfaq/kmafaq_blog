@@ -23,7 +23,7 @@ export default function SEO({
   const canonical = canonicalUrl.toString();
   const shareImage = image
     ? new URL(image, SITE.url).toString()
-    : new URL('/images/about-km-afaq.svg', SITE.url).toString();
+    : new URL('/images/og-default.png', SITE.url).toString();
   const shareImageAlt = imageAlt || title || `${SITE.name} — ${SITE.title}`;
   const isUrdu = language === 'ur';
   const sameAs = SITE.social.map((item) => item.href).filter(Boolean);
