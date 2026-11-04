@@ -65,6 +65,15 @@ export default function Footer() {
           </div>
         </div>
       </div>
+      <nav aria-label="Related independent resources" className="mx-auto max-w-7xl border-t border-gray-100 px-4 py-6 text-sm sm:px-6 lg:px-8">
+        <h2 className="mb-3 font-bold text-ink">More tools, research and learning</h2>
+        <div className="flex flex-wrap gap-x-6 gap-y-3 text-gray-600">
+          <a className="hover:text-primary hover:underline" href="https://anytool.online/">Free calculators and online tools</a>
+          <a className="hover:text-primary hover:underline" href="https://scholarportal.site/">Scholarship opportunities and application guides</a>
+          <a className="hover:text-primary hover:underline" href="https://kmafaq.site/">Research, projects and publications</a>
+          <a className="hover:text-primary hover:underline" href="https://worksheet.live/">Printable worksheets for children</a>
+        </div>
+      </nav>
       <div className="border-t border-gray-100 px-4 py-6 text-center text-sm text-gray-500">
         © 2026 KM Afaq. All rights reserved.
       </div>
