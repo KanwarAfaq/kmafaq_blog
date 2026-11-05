@@ -16,7 +16,12 @@ export default function SEO({
   noIndex = false,
   language = 'en',
 }) {
-  const pageTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | ${SITE.title}`;
+  const fit = (t) => {
+    const suffix = ` | ${SITE.name}`;
+    const v = String(t).trim();
+    return v.length + suffix.length <= 60 ? v + suffix : `${v.slice(0, 60 - suffix.length - 1).replace(/\s+\S*$/, '')}…${suffix}`;
+  };
+  const pageTitle = title ? fit(title) : `${SITE.name} | ${SITE.title}`;
   const pageDescription = cleanDescription(description);
   const canonicalUrl = new URL(path || '/', SITE.url);
   canonicalUrl.hash = '';

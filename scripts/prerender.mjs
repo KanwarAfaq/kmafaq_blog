@@ -2,6 +2,7 @@ import { renderArticleHtml } from '../server/article-html.js';
 import { PAGE_FAQS, faqSchema } from '../src/constants/faqs.js';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
+const fitTitle=t=>{const suf=' | KM Afaq';t=String(t).trim();return t.length+suf.length<=60?t+suf:t.slice(0,60-suf.length-1).replace(/\s+\S*$/,'')+'…'+suf;};
 const root=process.cwd(),site='https://kmafaq.online';
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clean=value=>String(value??'').replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,' ').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
@@ -84,7 +85,7 @@ for(const page of pages){
  ].join('');
  const json=JSON.stringify(base).replace(/</g,'\\u003c');
  const head=[
-  '<title>'+escape(page.title)+' | KM Afaq</title>',
+  '<title>'+escape(fitTitle(page.title))+'</title>',
   '<meta name="description" content="'+escape(description)+'" />',
   '<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1" />',
   '<link rel="canonical" href="'+escape(fullUrl)+'" />',
@@ -95,6 +96,7 @@ for(const page of pages){
   '<meta name="twitter:title" content="'+escape(page.title)+'" />',
   '<meta name="twitter:description" content="'+escape(description)+'" />',
   image?'<meta name="twitter:image" content="'+escape(image)+'" />':'',
+  page.kind==='BlogPosting'&&safeDate(page.date)?'<meta property="article:published_time" content="'+safeDate(page.date)+'" /><meta property="article:modified_time" content="'+safeDate(page.modified||page.date)+'" /><meta property="article:author" content="'+site+'/about" />':'',
   '<meta property="og:locale" content="'+(page.language==='ur'?'ur_PK':'en_US')+'" />',
   '<meta property="og:url" content="'+escape(fullUrl)+'" />',
   image?'<meta property="og:image" content="'+escape(image)+'" />':'',
