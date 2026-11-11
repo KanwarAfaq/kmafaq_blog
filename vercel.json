@@ -424,8 +424,8 @@
           "value": "strict-origin-when-cross-origin"
         },
         {
-          "key": "X-Frame-Options",
-          "value": "DENY"
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'self' https://kanwar-hub.vercel.app https://localhost capacitor://localhost"
         },
         {
           "key": "Permissions-Policy",
