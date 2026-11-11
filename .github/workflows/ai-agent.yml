@@ -1,4 +1,4 @@
-name: KM Afaq AI Agent - 5 Urdu + 5 English Daily
+name: KM Afaq Editorial Agent - maximum 4 articles daily
 
 on:
   workflow_dispatch:
@@ -16,24 +16,20 @@ on:
         type: choice
         options: [ur, en]
   schedule:
-    # Pakistan Standard Time = UTC+5
-    # Urdu: 08:00, 11:00, 14:00, 18:00, 22:00
-    - cron: '0 3 * * *'
-    - cron: '0 6 * * *'
-    - cron: '0 9 * * *'
-    - cron: '0 13 * * *'
-    - cron: '0 17 * * *'
-    # English: 09:30, 12:30, 16:00, 20:00, 23:30
-    - cron: '30 4 * * *'
-    - cron: '30 7 * * *'
-    - cron: '0 11 * * *'
-    - cron: '0 15 * * *'
-    - cron: '30 18 * * *'
-    # Safety summary check: 23:50 PKT. It sends nothing unless 5/5 + 5/5 is complete.
-    - cron: '50 18 * * *'
+    # Pakistan Standard Time UTC+5: two Urdu, two English slots.
+    # The database checks limit the entire site to FOUR articles per day.
+    - cron: '0 3 * * *'     # 08:00 Urdu
+    - cron: '30 4 * * *'    # 09:30 English
+    - cron: '0 9 * * *'     # 14:00 Urdu
+    - cron: '0 11 * * *'    # 16:00 English
+    - cron: '50 18 * * *'   # 23:50 daily completion summary
 
 permissions:
   contents: read
+
+concurrency:
+  group: kmafaq-blog-editorial
+  cancel-in-progress: false
 
 jobs:
   agent:
@@ -72,7 +68,7 @@ jobs:
           fi
           echo "task=publish" >> "$GITHUB_OUTPUT"
           case "$EVENT_SCHEDULE" in
-            '0 3 * * *'|'0 6 * * *'|'0 9 * * *'|'0 13 * * *'|'0 17 * * *') echo "language=ur" >> "$GITHUB_OUTPUT" ;;
+            '0 3 * * *'|'0 9 * * *') echo "language=ur" >> "$GITHUB_OUTPUT" ;;
             *) echo "language=en" >> "$GITHUB_OUTPUT" ;;
           esac
 
@@ -106,7 +102,8 @@ jobs:
           FACEBOOK_POSTING_ENABLED: ${{ secrets.FACEBOOK_POSTING_ENABLED }}
           LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
-          DAILY_POST_LIMIT_PER_LANGUAGE: '5'
+          DAILY_POST_LIMIT_PER_LANGUAGE: '2'
+          DAILY_POST_LIMIT_TOTAL: '4'
           PUBLISH_TIMEZONE: Asia/Karachi
           DUPLICATE_WINDOW_DAYS: '3'
           ALLOW_PUBLISH_WITHOUT_IMAGE: 'false'
