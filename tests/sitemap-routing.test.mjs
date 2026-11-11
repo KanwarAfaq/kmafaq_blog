@@ -18,3 +18,15 @@ test('unknown paths cannot silently become the homepage; supported dynamic route
   }
   assert.match(readFileSync('public/404.html','utf8'), /noindex/);
 });
+
+test('all static public landing pages serve their own pre-rendered HTML rather than the home shell', () => {
+  const config = JSON.parse(readFileSync('vercel.json', 'utf8'));
+  const pages = ['/blog','/blog/urdu','/blog/english','/services','/about','/contact','/line','/business','/tools','/shop','/jobs','/pricing'];
+  for(const page of pages){
+    const route = config.rewrites.find(r=>r.source===page);
+    assert.equal(route?.destination,page+'/index.html','wrong HTML document for '+page);
+  }
+  for(const route of config.rewrites.filter(r=>pages.includes(r.source))){
+    assert.notEqual(route.destination,'/index.html','public listing must not inherit homepage canonical');
+  }
+});
