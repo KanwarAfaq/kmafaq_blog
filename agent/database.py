@@ -41,6 +41,17 @@ class PostRepository:
         )
         return len(response.data or [])
 
+    def count_today_total_posts(self) -> int:
+        """Count all published site articles, not only one language or agent."""
+        start_utc, end_utc = self._local_day_bounds_utc()
+        response = (
+            self.client.table("posts").select("id")
+            .eq("status", "published")
+            .gte("created_at", start_utc).lt("created_at", end_utc)
+            .execute()
+        )
+        return len(response.data or [])
+
     def daily_post_counts(self) -> dict[str, int]:
         return {
             "ur": self.count_today_agent_posts("ur"),
