@@ -52,7 +52,7 @@ for(const page of pages){
  const focus=clean(page.title),lead=description.toLocaleLowerCase().includes(focus.toLocaleLowerCase())?description:focus+' — '+description;
  const image=external(page.image),source=external(page.source);
  const author={'@type':'Person',name:'KM Afaq',url:site+'/'};
- const publisher={'@type':'Organization',name:'KM Afaq',url:site+'/'};
+ const publisher={'@type':'Organization',name:'KM Afaq',url:site+'/',logo:site+'/favicon.svg'};
  const base={'@context':'https://schema.org','@type':page.kind==='BlogPosting'?'BlogPosting':'WebPage',
   headline:page.kind==='BlogPosting'?page.title:undefined,name:page.kind!=='BlogPosting'?page.title:undefined,
   url:fullUrl,description,inLanguage:page.language||'en',
