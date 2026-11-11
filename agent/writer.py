@@ -184,7 +184,13 @@ Research context — use this as factual grounding and do not invent beyond it:
 
 Requirements:
 - {language_rules}
-- Aim for 900-1,150 whitespace-separated words in the Markdown body.
+- Prioritize completeness, verified original insight and reader usefulness. No arbitrary SEO word-count target; avoid padding or repeating facts.
+- Clearly identify the original reporting source using an actual URL from the research context when available; never fabricate references.
+- State what is confirmed, what remains uncertain and when readers should check official updates.
+- Write one factual, concise, non-sensational title and a distinctive human-readable meta description that summarizes the actual article.
+- Do not generate multiple near-duplicate articles about one news event or use a template with superficial substitutions.
+- Add concrete implications and context for Pakistan/South Asian readers only where evidence supports them.
+- Never publish unconfirmed release dates, financial guarantees, fabricated quotes or source-free statistics.
 - Start with a concise introduction, then use useful ## headings and bullet lists where natural.
 - Prefer bullet lists over tables. If a table is genuinely useful, use valid GitHub-Flavored Markdown with EVERY table row on its own line; never compress multiple rows into one line.
 - Explain practical implications, risks/limitations, and actionable next steps when appropriate.
@@ -211,11 +217,19 @@ Return exactly:
     content = str(data.get("content", "")).strip()
     if not content:
         raise RuntimeError("The model returned an empty article body")
+    # Editorial fail-closed checks. Avoid publishing boilerplate or incomplete drafts.
+    forbidden = ('as an ai language model', 'lorem ipsum', '[insert source', '[source url]', 'click here to learn more')
+    if any(x in content.casefold() for x in forbidden):
+        raise RuntimeError('Unfinished or boilerplate copy is not publishable')
+    if len(content.strip()) < 1200 or len(content.splitlines()) < 7:
+        raise RuntimeError('Article lacks sufficient useful structure or supporting context')
+    if not any(line.strip().startswith('## ') for line in content.splitlines()):
+        raise RuntimeError('Article has no descriptive section headings')
 
-    if len(content.split()) < 850:
+    if len(content.split()) < 600:
         LOGGER.warning("Draft is short (%d words); requesting one expansion pass", len(content.split()))
         repair_prompt = f"""
-Expand and improve this {language_name} article to approximately 900-1,150 words without inventing facts.
+Improve this {language_name} article with missing sourced context and practical information, without word-count padding or invented facts.
 Keep the same topic, title intent, SEO fields, language, and Markdown style. Return the same JSON object shape.
 
 Current JSON:
