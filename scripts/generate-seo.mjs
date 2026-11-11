@@ -145,7 +145,7 @@ await writeFile(resolve(publicDir,'seo-pages.json'),JSON.stringify({
 
 const urls = [
   ...staticRoutes.map((route) => ({ loc: `${siteUrl}${route}`, lastmod: null })),
-  ...posts.filter((row) => row.slug&&!PRUNED[row.slug]).map((row) => ({ loc: `${siteUrl}/blog/${encodeURIComponent(row.slug)}`, lastmod: row.created_at })),
+  ...posts.filter((row) => row.slug&&!PRUNED[row.slug]).map((row) => ({ loc: `${siteUrl}/blog/${encodeURIComponent(row.slug)}`, lastmod: row.updated_at || row.created_at })),
   ...products.filter((row) => row.slug).map((row) => ({ loc: `${siteUrl}/shop/${encodeURIComponent(row.slug)}`, lastmod: row.created_at })),
   ...jobs.filter((row) => row.slug).map((row) => ({ loc: `${siteUrl}/jobs/${encodeURIComponent(row.slug)}`, lastmod: row.created_at })),
   ...businesses.filter((row) => row.slug).map((row) => ({ loc: `${siteUrl}/business/${encodeURIComponent(row.slug)}`, lastmod: row.created_at })),
