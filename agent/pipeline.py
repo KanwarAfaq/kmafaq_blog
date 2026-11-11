@@ -50,6 +50,10 @@ def run_agent(
 
     repo = None if dry_run else PostRepository(settings)
     if repo:
+        site_count = repo.count_today_total_posts()
+        if site_count >= settings.daily_post_limit_total:
+            LOGGER.info('Daily sitewide cap reached: %d/%d',site_count,settings.daily_post_limit_total)
+            return {'status':'daily-limit','scope':'site','published_today':site_count,'daily_limit':settings.daily_post_limit_total}
         today_count = repo.count_today_agent_posts(language)
         if today_count >= settings.daily_post_limit_per_language:
             LOGGER.info(
@@ -167,6 +171,9 @@ def run_agent(
         LOGGER.info("Cloudinary upload complete: %s", media.public_id if media else "no image")
 
         assert repo is not None
+        # Recheck immediately before insertion; manual dispatch cannot bypass quota.
+        if repo.count_today_total_posts() >= settings.daily_post_limit_total or repo.count_today_agent_posts(language) >= settings.daily_post_limit_per_language:
+            return {'status':'daily-limit','scope':'site-or-language','language':language}
         result: PublishResult = repo.publish(
             article,
             selection,
