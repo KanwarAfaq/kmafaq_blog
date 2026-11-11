@@ -24,7 +24,7 @@ export function renderPublicPage(shell,section,slug,row) {
  try { const u=new URL(imageValue);if(['http:','https:'].includes(u.protocol))image=u.href; } catch { /* Optional image. */ }
  if(image)schema.image=image;
  if(section==='blog'){
-  schema.publisher={'@type':'Organization',name:'KM Afaq',url:site+'/'};
+  schema.publisher={'@type':'Organization',name:'KM Afaq',url:site+'/',logo:site+'/favicon.svg'};
   schema.mainEntityOfPage={'@type':'WebPage','@id':canonical};
   schema.isAccessibleForFree=true;
   schema.breadcrumb={'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'Home',item:site+'/'},{'@type':'ListItem',position:2,name:language==='ur'?'اردو بلاگ':'English Blog',item:site+(language==='ur'?'/blog/urdu':'/blog/english')},{'@type':'ListItem',position:3,name:title,item:canonical}]};
