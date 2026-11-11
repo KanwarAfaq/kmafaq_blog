@@ -77,8 +77,10 @@ class Settings:
     )
     gemini_image_timeout_seconds: int = _int("GEMINI_IMAGE_TIMEOUT_SECONDS", 12)
 
-    # Publishing policy: at most 5 posts/language/Pakistan day.
-    daily_post_limit_per_language: int = _int("DAILY_POST_LIMIT_PER_LANGUAGE", 5)
+    # Four total AI articles/site/day, balanced up to two in each language.
+    # Hard clamp stops environment overrides from raising the editorial ceiling.
+    daily_post_limit_total: int = min(4, max(1, _int("DAILY_POST_LIMIT_TOTAL", 4)))
+    daily_post_limit_per_language: int = min(2, max(1, _int("DAILY_POST_LIMIT_PER_LANGUAGE", 2)))
     publish_timezone: str = os.getenv("PUBLISH_TIMEZONE", "Asia/Karachi")
 
     # Supabase server-side credentials. Never expose SERVICE_ROLE to browser code.
