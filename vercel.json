@@ -246,15 +246,15 @@
     },
     {
       "source": "/blog",
-      "destination": "/index.html"
+      "destination": "/blog/index.html"
     },
     {
       "source": "/blog/urdu",
-      "destination": "/index.html"
+      "destination": "/blog/urdu/index.html"
     },
     {
       "source": "/blog/english",
-      "destination": "/index.html"
+      "destination": "/blog/english/index.html"
     },
     {
       "source": "/blog/:slug",
@@ -262,19 +262,19 @@
     },
     {
       "source": "/services",
-      "destination": "/index.html"
+      "destination": "/services/index.html"
     },
     {
       "source": "/about",
-      "destination": "/index.html"
+      "destination": "/about/index.html"
     },
     {
       "source": "/contact",
-      "destination": "/index.html"
+      "destination": "/contact/index.html"
     },
     {
       "source": "/line",
-      "destination": "/index.html"
+      "destination": "/line/index.html"
     },
     {
       "source": "/line/preferences",
@@ -286,7 +286,7 @@
     },
     {
       "source": "/business",
-      "destination": "/index.html"
+      "destination": "/business/index.html"
     },
     {
       "source": "/business/:slug",
@@ -294,11 +294,11 @@
     },
     {
       "source": "/tools",
-      "destination": "/index.html"
+      "destination": "/tools/index.html"
     },
     {
       "source": "/shop",
-      "destination": "/index.html"
+      "destination": "/shop/index.html"
     },
     {
       "source": "/shop/:slug",
@@ -306,7 +306,7 @@
     },
     {
       "source": "/jobs",
-      "destination": "/index.html"
+      "destination": "/jobs/index.html"
     },
     {
       "source": "/jobs/post",
@@ -318,7 +318,7 @@
     },
     {
       "source": "/pricing",
-      "destination": "/index.html"
+      "destination": "/pricing/index.html"
     },
     {
       "source": "/admin",
