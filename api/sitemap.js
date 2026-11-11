@@ -1,4 +1,6 @@
 import rssHandler from '../server/rss.js';
+import { readFileSync } from 'node:fs';
+const PRUNED = JSON.parse(readFileSync(new URL('../server/pruned-slugs.json', import.meta.url), 'utf8'));
 const SITE_URL = (process.env.SITE_URL || 'https://kmafaq.online').replace(/\/$/, '');
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
 const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
@@ -79,7 +81,7 @@ async function fetchRows({ table, status, prefix }) {
   }
 
   return rows
-    .filter((row) => row?.slug)
+    .filter((row) => row?.slug && !(prefix === '/blog/' && PRUNED[row.slug]))
     .map((row) => ({
       loc: `${SITE_URL}${prefix}${encodeURIComponent(row.slug)}`,
       lastmod: [row.updated_at, row.created_at].find(value => value && Number.isFinite(Date.parse(value))) || null,

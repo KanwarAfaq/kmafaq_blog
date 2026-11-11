@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+const PRUNED = JSON.parse(await readFile(new URL('../server/pruned-slugs.json', import.meta.url), 'utf8'));
 
 async function loadLocalEnv() {
   try {
@@ -117,7 +118,7 @@ const publicStatic = [
 ];
 const snapshotPages = [
   ...publicStatic.map(p=>({...p,kind:'WebPage'})),
-  ...posts.filter(p=>p.slug).map(p=>({
+  ...posts.filter(p=>p.slug&&!PRUNED[p.slug]).map(p=>({
     path:'/blog/'+encodeURIComponent(p.slug),kind:'BlogPosting',title:p.title,
     description:p.seo_description||p.excerpt||p.title,content:p.content||'',language:p.language||'en',
     image:p.cover_image_url,source:p.source_url,date:p.created_at,modified:p.updated_at||p.created_at,
@@ -144,7 +145,7 @@ await writeFile(resolve(publicDir,'seo-pages.json'),JSON.stringify({
 
 const urls = [
   ...staticRoutes.map((route) => ({ loc: `${siteUrl}${route}`, lastmod: null })),
-  ...posts.filter((row) => row.slug).map((row) => ({ loc: `${siteUrl}/blog/${encodeURIComponent(row.slug)}`, lastmod: row.created_at })),
+  ...posts.filter((row) => row.slug&&!PRUNED[row.slug]).map((row) => ({ loc: `${siteUrl}/blog/${encodeURIComponent(row.slug)}`, lastmod: row.created_at })),
   ...products.filter((row) => row.slug).map((row) => ({ loc: `${siteUrl}/shop/${encodeURIComponent(row.slug)}`, lastmod: row.created_at })),
   ...jobs.filter((row) => row.slug).map((row) => ({ loc: `${siteUrl}/jobs/${encodeURIComponent(row.slug)}`, lastmod: row.created_at })),
   ...businesses.filter((row) => row.slug).map((row) => ({ loc: `${siteUrl}/business/${encodeURIComponent(row.slug)}`, lastmod: row.created_at })),

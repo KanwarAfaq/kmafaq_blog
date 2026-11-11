@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+const PRUNED = JSON.parse(readFileSync(new URL('./pruned-slugs.json', import.meta.url), 'utf8'));
 const SITE_URL = (process.env.SITE_URL || 'https://kmafaq.online').replace(/\/$/, '');
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
 const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
@@ -10,7 +12,7 @@ const escapeXml = (value = '') => String(value)
 export function buildRss(posts) {
   const dated = posts.find(p => Number.isFinite(Date.parse(p.updated_at || p.created_at)));
   const built = new Date(dated ? (dated.updated_at || dated.created_at) : Date.now()).toUTCString();
-  const items = posts.filter(p => p?.slug && p?.title).map((p) => {
+  const items = posts.filter(p => p?.slug && p?.title && !PRUNED[p.slug]).map((p) => {
     const link = `${SITE_URL}/blog/${encodeURIComponent(p.slug)}`;
     const date = Number.isFinite(Date.parse(p.created_at)) ? `\n      <pubDate>${new Date(p.created_at).toUTCString()}</pubDate>` : '';
     return `    <item>
