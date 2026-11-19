@@ -46,6 +46,20 @@ const publicArticleLinks=page=>{
 };
 const faqHtml=path=>{const f=PAGE_FAQS[path];if(!f)return '';
  return '<section><h2>'+escape(f.heading)+'</h2><dl>'+f.items.map(i=>'<dt>'+escape(i.q)+'</dt><dd>'+escape(i.a)+'</dd>').join('')+'</dl><nav aria-label="Related pages"><ul>'+f.links.map(l=>'<li><a href="'+escape(l.to)+'">'+escape(l.text)+'</a></li>').join('')+'</ul></nav></section>'};
+
+const commercialContent=page=>{
+ if(page.path==='/shop'){
+  const products=pages.filter(p=>/^\/shop\/[a-z0-9_%/-]+$/i.test(p.path));
+  if(!products.length)return '<section><h2>Digital resources</h2><p>Browse the service offerings and contact the publisher about resources that fit your workflow. Product pages will appear when a downloadable resource is available.</p><p><a href="/pricing">See partnership options</a> or <a href="/contact">ask about a digital resource</a>.</p></section>';
+  return '<section data-seo-product-list="true"><h2>Available digital resources</h2><p>Explore downloadable templates and practical resources. Open each resource to review its description and current availability before ordering or downloading.</p><ul>'+
+    products.slice(0,80).map(p=>'<li><a href="'+escape(p.path)+'">'+escape(p.title)+'</a> — '+escape(clean(p.description||p.title))+'</li>').join('')+
+   '</ul><p>Looking for a bundle or a resource for your team? <a href="/pricing">Explore digital product partnerships</a> or <a href="/contact">send an enquiry</a>.</p></section>';
+ }
+ if(page.path==='/services')return '<section><h2>How a technology project begins</h2><p>Start with the current workflow, the inputs you can share, the users who depend on it and the outcome you want to measure. AI automation projects may involve data extraction, review steps or tool integrations. Web development projects may involve a responsive interface, a backend or deployment work. The appropriate scope depends on your requirements rather than a pre-set package.</p><p>Before starting, agree on deliverables, which accounts and data need access, testing criteria, maintenance responsibility and any relevant privacy requirements. <a href="/contact">Describe your project</a> or review <a href="/pricing">service and partnership options</a>.</p></section>';
+ if(page.path==='/pricing')return '<section><h2>Compare service and partnership options</h2><p>Current options include premium watchlist alerts, business directory listings, sponsored articles, featured job listings, newsletter sponsorships and digital-product partnerships. Choose an option according to what you need: personal updates, a qualified enquiry channel, an advertising placement or a downloadable resource.</p><p>The interactive plan selector above shows the current descriptions and prices. Before committing, confirm what is included, the duration, editorial labeling for sponsorships and how leads or results will be reported. Sponsorship never guarantees Google ranking or indexing. <a href="/contact">Contact KM Afaq</a> if you need a custom scope.</p></section>';
+ return '';
+};
+
 const safeDate=value=>value&&!Number.isNaN(Date.parse(value))?new Date(value).toISOString():undefined;
 for(const page of pages){
  const fullUrl=site+page.path,description=clean(page.description||page.title);
@@ -77,6 +91,7 @@ for(const page of pages){
   '<h2>'+escape((page.language==='ur'?'مزید تفصیل: ':'About ')+focus)+'</h2>',
   articleContent||'<p>'+escape(description)+'</p>',
   publicArticleLinks(page),
+  commercialContent(page),
   faqHtml(page.path),
   links.length?'<nav aria-label="Related pages"><h2>Related articles and resources</h2><ul>'+
    links.map(l=>'<li><a href="'+escape(l.path)+'">'+escape(l.text)+'</a></li>').join('')+'</ul></nav>':'',
