@@ -15,6 +15,14 @@ test('every SEO snapshot has indexable metadata, focus content, links and valid 
    assert.ok(landing.includes('href="'+post.path+'"'),'missing crawlable article link '+post.path);
   }
  }
+ const products=pages.filter(page=>page.path.startsWith('/shop/'));
+ if(products.length){
+  const shop=await readFile(resolve('dist/shop/index.html'),'utf8');
+  assert.match(shop,/data-seo-product-list="true"/,'shop must expose active digital products without JavaScript');
+  for(const product of products)assert.ok(shop.includes('href="'+product.path+'"'),'shop missing product link '+product.path);
+ }
+ const pricing=await readFile(resolve('dist/pricing/index.html'),'utf8');
+ assert.match(pricing,/Compare service and partnership options/,'pricing should explain the real offerings before client hydration');
  assert.ok(pages.length>=13,'missing static pages');
  for(const page of pages){
   const path=page.path==='/'?'index.html':page.path.slice(1)+'/index.html';
